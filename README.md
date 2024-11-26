@@ -1,2 +1,2 @@
-# cg_voxel
-Voxel Game -> Computer graphics work (DCC065) - UFJF
+# CG
+Files for the Computer Graphics course in Three.js
