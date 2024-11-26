@@ -1,7 +1,7 @@
 import * as THREE from  '../../build/three.module.js';
 import Position from '../core/position.js';
 import CoordConverter from '../core/coordconverter.js';
-import BuilderBlockRenderer from './builderblockrender.js';
+import BlockRenderer from '../core/blockrenderer.js';
 import NavigateBlock from './navigateblock.js';
 import Workspace from '../core/workspace.js';
 
@@ -20,14 +20,14 @@ export default class BuilderMouseMove {
     camera;
     /** @type {NavigateBlock} */
     navigator;
-    /** @type {BuilderBlockRenderer} */
+    /** @type {BlockRenderer} */
     blockRender;
 
     /**
      * Constructor
      * @param {THREE.Camera} camera
      * @param {NavigateBlock} navigator
-     * @param {BuilderBlockRenderer} blockRender
+     * @param {BlockRenderer} blockRender
      */
     constructor(camera, navigator, blockRender) {
         this.raycaster = new THREE.Raycaster();

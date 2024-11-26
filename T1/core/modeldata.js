@@ -1,4 +1,4 @@
-import BuilderBlockRenderer from '../builder/builderblockrender.js';
+import BlockRenderer from './blockrenderer.js';
 import { hexToUint8, trimmedUint8ToHex } from '../other/uint8conv.js';
 import Position from './position.js';
 import WorldLimit from './worldlimit.js';
@@ -9,7 +9,7 @@ export default class ModelData {
     size = 0;
     height = 0;
 
-    /** @type {BuilderBlockRenderer} Block rendere instance, needs to have updateList function */
+    /** @type {BlockRenderer} Block rendere instance, needs to have updateList function */
     blockRender;
 
     /**
@@ -59,7 +59,7 @@ export default class ModelData {
 
         this.blockRender.updateList({ add: [
             {id: this.data[idx], pos, ref}
-        ]});
+        ], remove: []});
     }
 
 
@@ -130,7 +130,7 @@ export default class ModelData {
             const ref = Position.refFrom(pos.x, pos.y, pos.z);
             this.blockRender.updateList({ add: [
                 {id, pos, ref}
-            ]});
+            ], remove: []});
         }
     }
 

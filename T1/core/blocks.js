@@ -29,6 +29,8 @@ export default class Blocks {
         this.createMaterialList();
     }
 
+    static EMPTY = 0;
+
     /**
      * Get instance
      * @returns {Blocks}

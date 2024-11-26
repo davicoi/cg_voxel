@@ -1,7 +1,7 @@
 import * as THREE from  '../../build/three.module.js';
-import Workspace from '../core/workspace.js';
-import Blocks from '../core/blocks.js';
-import CoordConverter from '../core/coordconverter.js';
+import Workspace from './workspace.js';
+import Blocks from './blocks.js';
+import CoordConverter from './coordconverter.js';
 
 const blocks = Blocks.getInstance();
 

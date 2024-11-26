@@ -8,7 +8,7 @@ import {initRenderer,
 
 import Conf from './core/conf.js';
 import WorkSpace from './core/workspace.js';
-import BuilderBlockRenderer from './builder/builderblockrender.js';
+import BlockRenderer from './core/blockrenderer.js';
 import NavigateBlock from './builder/navigateblock.js';
 import BuilderMouseMove from './builder/buildermousemove.js';
 import BuilderMenu from './builder/buildermenu.js';
@@ -64,7 +64,7 @@ setTimeout(() => {
  */
 
 // workspace
-const blockRender = new BuilderBlockRenderer(scene);
+const blockRender = new BlockRenderer(scene);
 const workGrid = new WorkGrid(scene, false);
 const workspace = new WorkSpace({
     blockRender,

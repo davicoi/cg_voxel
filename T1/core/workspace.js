@@ -1,6 +1,6 @@
 
 import * as THREE from  '../../build/three.module.js';
-import BuilderBlockRenderer from '../builder/builderblockrender.js';
+import BlockRenderer from './blockrenderer.js';
 import Conf from './conf.js';
 import ModelData from './modeldata.js';
 import Position from './position.js';
@@ -21,7 +21,7 @@ export default class Workspace {
 
     /** @type {ModelData} */
     modelData;
-    /** @type {BuilderBlockRenderer} */
+    /** @type {BlockRenderer} */
     blockRender;
     /** @type {WorkGrid} */
     workGrid;
@@ -83,7 +83,7 @@ export default class Workspace {
 
     /**
      * 
-     * @param {BuilderBlockRenderer} blockRender 
+     * @param {BlockRenderer} blockRender 
      */
     setBlockRender(blockRender) {
         this.blockRender = blockRender;
