@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "module": "ES6",
+    "target": "ES6"
+  },
+  "exclude": ["examples", "exercises", "html", "libs/aframe", "libs/aframe", "libs/AR", "libs/other", "libs/pathTracing", "libs/rayTracing"],
+  "include": ["build", "libs/util", "T1"]
+}
