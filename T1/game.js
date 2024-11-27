@@ -14,6 +14,7 @@ import KeyControl from './builder/keycontrol.js'
 import PreviewBlock from './core/previewblock.js';
 import MapGenerator from './core/mapgenerator.js';
 import FloatingBox from './other/floatingbox.js';
+import BlockModels from './core/blockmodels.js';
 
 /**
  * init ThreeJS
@@ -53,6 +54,10 @@ const workspace = new WorkSpace({
     workGrid,
     camera
 }, null, Conf.DEFAULT_SIZE);
+const blockModels = new BlockModels();
+
+
+
 
 // navigation block
 const navigate = new PreviewBlock(scene, workspace);
@@ -104,19 +109,22 @@ MapGenerator.create(workspace.getModelData().getSize(), 3, 15, seed);
 
 
 
-const info = new FloatingBox('info');
+function createFPSBox() {
+    const info = new FloatingBox('info');
 
-let lastFrame = 0;
-setInterval(() => {
-    const fps = renderer.info.render.frame - lastFrame;
-    lastFrame = renderer.info.render.frame;
-    info.setText(`FPS: ${fps}<br/>Calls: ${renderer.info.render.calls}<br/>Triangles: ${renderer.info.render.triangles}`);
-}, 1000);
+    let lastFrame = 0;
+    setInterval(() => {
+        const fps = renderer.info.render.frame - lastFrame;
+        lastFrame = renderer.info.render.frame;
+        info.setText(`FPS: ${fps}<br/>Calls: ${renderer.info.render.calls}<br/>Triangles: ${renderer.info.render.triangles}`);
+    }, 1000);
+
+    return info;
+}
 
 /**
  * main loop
  */
-render();
 function render()
 {
     requestAnimationFrame(render);
@@ -124,10 +132,16 @@ function render()
     KeyControl.keyboardUpdate();
     mouseMove.update(workspace);
 
-    //console.log(renderer.info.render.calls);
-    //console.log(renderer.info.render.triangles);
-//    console.log(renderer.info.render.frame);
-
-
     renderer.render(scene, camera);
 }
+
+
+async function main() {
+    await blockModels.loadAll();
+    createFPSBox();
+
+    workspace.addModel(blockModels.get('tree1'), workspace.centerPos);
+
+    render();
+}
+main();

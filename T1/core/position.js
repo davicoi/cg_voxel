@@ -11,7 +11,7 @@ export default class Position {
     /**
      * Position of blocks (non real position)
      */
-    constructor(x, y, z) {
+    constructor(x = 0, y = 0, z = 0) {
         this.set(x, y, z);
     }
 

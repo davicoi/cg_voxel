@@ -8,20 +8,31 @@ export default class ModelData {
     data;
     size = 0;
     height = 0;
+    highestBlock = 0;
+    /** @type {Position} */
+    center = new Position();
 
     /** @type {BlockRenderer} Block rendere instance, needs to have updateList function */
     blockRender;
 
+
     /**
      * Constructor
-     * @param {*} size workspace size (10 = 10x10x10)
+     * @param {number} size workspace size (10 = 10x10x10)
      */
-    constructor(size) {
-        if (!size || size < 0 || size > WorldLimit.MAX_SIZE)
+    constructor(size, height = 0) {
+        if (!size || size < 0 || size > WorldLimit.MAX_SIZE || height < 0 || height > WorldLimit.MAX_DEPTH)
             throw new RangeError(`Invalid ModelData size. (Max: ${WorldLimit.MAX_WIDTH}x${WorldLimit.MAX_HEIGHT}x${WorldLimit.MAX_DEPTH})`);
 
-        this.size = size;
-        this.height = Math.min(size, WorldLimit.MAX_DEPTH);
+        height = height || size;
+        if (height >= WorldLimit.MAX_DEPTH)
+            height = WorldLimit.MAX_DEPTH;
+
+        this.size = parseInt(size);
+        this.height = parseInt(height);
+        this.highestBlock = 0;
+        this.center = new Position(this.size / 2, 0, this.size / 2);
+
         this.data = new Uint8Array(size*size*this.height);
     }
 
@@ -42,16 +53,12 @@ export default class ModelData {
     reloadBlocks() {
         this.blockRender.clear();
 
-        let x, y, z;
-        for (x = 0 ; x < this.size ; x++) {
-            for (z = 0 ; z < this.size ; z++) {
-                for (y = 0 ; y < this.height ; y++) {
-                    this.getAndSet(x, y, z);
-                }
-            }
-        }
+        this.forEachBlock((id, x, y, z) => {
+            this.getAndSet(x, y, z);
+        });
     }
 
+    // FIXME: refactor to block renderer
     getAndSet(x, y, z) {
         const pos = {x, y, z};
         const idx = this.indexOf(pos)
@@ -62,27 +69,25 @@ export default class ModelData {
         ], remove: []});
     }
 
-
-
     /** Load model from json */
-    // FIXME: trimmed data
-    static loadData(jsonOrString) {
+    static load(jsonOrString) {
         const info = typeof jsonOrString != 'string' ? jsonOrString : JSON.parse(jsonOrString);
-        const model = new ModelData(info.size);
+        const model = new ModelData(info.size, info.height || info.size);
         const uint8 = hexToUint8(info.data);
 
         for (let i = 0 ; i < uint8.length ; i++) {
             model.data[i] = uint8[i];
         }
-        //this.reloadBlocks(model);
+        model.highestBlock = info.highestBlock;
         return model;
     }
 
     /** Dump data to json */
-    // FIXME: trimmed data
     dump() {
         const info = {
             size: this.size,
+            height: this.height,
+            highestBlock: this.highestBlock,
             data: trimmedUint8ToHex(this.data)
         }
 
@@ -94,9 +99,9 @@ export default class ModelData {
      * @param {Position} pos 
      */
     checkPos(pos) {
-        return !(pos.y < 0 || pos.y >= this.size ||
+        return !(pos.y < 0 || pos.y >= this.height ||
                  pos.x < 0 || pos.x >= this.size ||
-                 pos.z < 0 || pos.z >= this.height);
+                 pos.z < 0 || pos.z >= this.size);
     }
 
     /**
@@ -123,9 +128,12 @@ export default class ModelData {
         if (idx < 0 || this.data[idx] == id)
             return;
 
-        const rem = this.data[idx];
+        if (pos.y > this.highestBlock && id)
+            this.highestBlock = pos.y;
+
         this.data[idx] = id;
-        
+
+        // FIXME: refactor to block renderer
         if (this.blockRender) {
             const ref = Position.refFrom(pos.x, pos.y, pos.z);
             this.blockRender.updateList({ add: [
@@ -151,5 +159,34 @@ export default class ModelData {
     // FIXME: add > 1 && remove
     setBlockRender(renderObj) {
         this.blockRender = renderObj;
+    }
+
+    // /** calculate the maximum height where there is a block */
+    // calcHighestBlock() {
+    //     let p = this.data.length - 1;
+    //     for (; p >= 0 && !this.data[p] ; p--);
+    //     p += this.size * this.size - 1;
+    //     return p / (this.size * this.size) | 0;
+    // }   
+
+    /**
+     * Iterate over existing blocks
+     * @param {function} callback - callback(id, x, y, z)
+     */
+    forEachBlock(callback) {
+        const pos = new Position(0, 0, 0);
+        const height = this.highestBlock;
+
+        let id;
+        for (pos.y = 0 ; pos.y < height ; pos.y++) {
+            for (pos.z = 0 ; pos.z < this.size ; pos.z++) { 
+                for (pos.x = 0 ; pos.x < this.size ; pos.x++) {
+                    id = this.get(pos);
+                    if (!id)
+                        continue;
+                    callback(this.get(pos), pos.x, pos.y, pos.z);
+                }
+            }
+        }
     }
 }

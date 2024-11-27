@@ -58,7 +58,7 @@ export default class Workspace {
     }
 
     loadModel(data) {
-        const model = ModelData.loadData(data);
+        const model = ModelData.load(data);
         this.setModelData(model);
     }
 
@@ -128,5 +128,25 @@ export default class Workspace {
      */
     getModelData() {
         return this.modelData;
+    }
+
+    /**
+     * add a model to map
+     * @param {ModelData} model 
+     * @param {Position} pos 
+     */
+    addModel(model, pos) {
+        if (!model)
+            return;
+
+        const p = new Position();
+        pos = pos.clone();
+        pos.add(model.center.x, model.center.y, model.center.z);
+
+
+        model.forEachBlock((id, x, y, z) => {
+            p.set(pos.x + x, pos.y + y, pos.z + z);
+            this.set(id, p);
+        });
     }
 }

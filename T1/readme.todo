@@ -1,12 +1,12 @@
 
 Engine:
-  ☐ load models
   ☐ orbit camera (1)
   ☐ lower plane (invisible)
   ☐ generate map (5)
   ☐ random trees (3)
   ☐ first person camera (3)
   ☐ use initDefaultBasicLight(scene) (1)
+  ☐ organize objects used at startup
 
   ☐ menu
   ☐ raycaster
@@ -24,6 +24,7 @@ Builder:
   ☐ fix camera
 
 Archive:
+  ✔ load models @done(24-11-27 18:19) @project(Engine)
   ✔  lower plane with grid (1) @project(Builder)
   ✔  model data
   ✔  builder navigation (5) @project(Builder)
