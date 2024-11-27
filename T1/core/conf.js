@@ -4,6 +4,7 @@ const Conf = {
     CUBE_SIZE: CUBE_SIZE,
     CUBE_ADD_Y: CUBE_SIZE / 2,
 
+    DEFAULT_SIZE: 100,
     DEFAULT_BUILDER_SIZE: 10
 };
 

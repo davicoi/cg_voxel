@@ -1,19 +1,19 @@
 
 Engine:
-  ☐  orbit camera (1)
-  ✔  block renderer -> refactor builder render @done(24-11-26 19:51)
-  ☐  lower plane (invisible)
-  ☐  generate map (5)
-  ☐  random trees (3)
-  ☐  first person camera (3)
-  ☐  use initDefaultBasicLight(scene) (1)
+  ☐ load models
+  ☐ orbit camera (1)
+  ☐ lower plane (invisible)
+  ☐ generate map (5)
+  ☐ random trees (3)
+  ☐ first person camera (3)
+  ☐ use initDefaultBasicLight(scene) (1)
 
-  ☐  menu
-  ☐  raycaster
+  ☐ menu
+  ☐ raycaster
 
-  ☐  block positions can have negative values - model data @low 
+  ☐ block positions can have negative values - model data @low 
 
-  ☐  change perlin 2d to 3d @low
+  ☐ change perlin 2d to 3d @low
 
 Optimize Blocks: 
   ☐ 1 -> remove (& don't add) blocks that are surrounded by other blocks
@@ -37,4 +37,5 @@ Archive:
   ✔  menu @project(Builder)
   ✔  create 3 trees (4) @project(Builder)
   ✔  perlin noise
+  ✔  block renderer -> refactor builder render @done(24-11-26 19:51)
 

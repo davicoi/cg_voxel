@@ -3,6 +3,10 @@ import Conf from "./conf.js"
 import MaterialList from "./materiallist.js";
 
 
+// TODO: THREE.BoxBufferGeometry
+// https://medium.com/@pailhead011/instancing-with-three-js-36b4b62bc127
+// https://github.com/mrdoob/three.js/blob/dev/examples/webgl_interactive_cubes.html
+
 /** Default block list, the first is ALWAYS EMPTY (0 = no block) */
 const blockList = [
     '',
@@ -22,10 +26,13 @@ let blockInst = null;
  */
 export default class Blocks {
     blocksCount = 0;
+    /** @type {THREE.BoxGeometry} */
+    cube;
 
     constructor() {
         if (blockInst)
             throw new ReferenceError("ERROR: Only 1 instance of Blocks() is allowed. Use Block.getInstance().")
+        this.createCube();
         this.createMaterialList();
     }
 
@@ -40,6 +47,11 @@ export default class Blocks {
             blockInst = new Blocks();
 
         return blockInst;
+    }
+
+    createCube() {
+        if (!this.cube)
+            this.cube = new THREE.BoxGeometry(Conf.CUBE_SIZE, Conf.CUBE_SIZE, Conf.CUBE_SIZE);
     }
 
     /** Create default materials */
@@ -63,8 +75,7 @@ export default class Blocks {
 
         const materialList = MaterialList.getInstance();
         const material = materialList.get(`b${parseInt(id)}`);
-        const cube = new THREE.BoxGeometry(Conf.CUBE_SIZE, Conf.CUBE_SIZE, Conf.CUBE_SIZE);
-        const mesh = new THREE.Mesh(cube, material);
+        const mesh = new THREE.Mesh(this.cube, material);
         return mesh;
     }
 
