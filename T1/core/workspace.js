@@ -6,6 +6,7 @@ import ModelData from './modeldata.js';
 import Position from './position.js';
 import WorkGrid from '../builder/workgrid.js';
 import WorldModel from './worldmodel.js';
+import Core from './core.js';
 
 
 
@@ -96,6 +97,9 @@ export default class Workspace {
      * @returns {ModelData}
      */
     setModelData(modelData) {
+        const core = Core.getInstance();
+        core.setModel(modelData);
+
         this.wordModel.setModel(modelData);
 
         const newSize = this.gridSize != modelData.size;

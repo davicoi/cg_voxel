@@ -2,10 +2,10 @@ import * as THREE from  '../../build/three.module.js';
 import Position from './position.js';
 import CoordConverter from './coordconverter.js';
 import BlockRenderer from './blockrenderer.js';
-import NewBlockPosition from './newblockposition.js';
+import PreviewBlock from './previewblock.js';
 import Workspace from './workspace.js';
 
-export default class BuilderMouseMove {
+export default class MouseMove {
     /** @type {Position} */
     lastRemovePos = null;
     lastAddPos = null;
@@ -18,7 +18,7 @@ export default class BuilderMouseMove {
     mouse;
     /** @type {THREE.Camera} */
     camera;
-    /** @type {NewBlockPosition} */
+    /** @type {PreviewBlock} */
     navigator;
     /** @type {BlockRenderer} */
     blockRender;
@@ -26,7 +26,7 @@ export default class BuilderMouseMove {
     /**
      * Constructor
      * @param {THREE.Camera} camera
-     * @param {NewBlockPosition} navigator
+     * @param {PreviewBlock} navigator
      * @param {BlockRenderer} blockRender
      */
     constructor(camera, navigator, blockRender) {

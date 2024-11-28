@@ -189,4 +189,28 @@ export default class ModelData {
             }
         }
     }
+
+    /**
+     * 
+     * @param {ModelData} model 
+     * @param {Position} pos 
+     */
+    addModel(model, pos) {
+        const destPos = new Position();
+        const center = model.center;
+
+        model.forEachBlock((id, x, y, z) => {
+            destPos.set(pos.x + x - center.x, pos.y + y - center.y, pos.z + z - center.z);
+            this.set(id, destPos);
+        });
+    }
+
+    firstEmptyFrom(x, z) {
+        const max = Math.max(this.height, this.highestBlock + 1);
+        for (let y = 0 ; y < max ; y++) {
+            if (this.get({x, y, z}) == 0)
+                return y;
+        }
+        return -1;
+    }
 }

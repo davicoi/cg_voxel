@@ -1,83 +1,35 @@
-import * as THREE from    '../build/three.module.js';
-import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
-import {initRenderer,
-        initCamera,
-        initDefaultBasicLight,
-        InfoBox,
-        onWindowResize } from "../libs/util/util.js";
+import { InfoBox } from "../libs/util/util.js";
 
-import Conf from './core/conf.js';
-import WorkSpace from './core/workspace.js';
-import BlockRenderer from './core/blockrenderer.js';
 import NavigateBlock from './builder/navigateblock.js';
+import WorkGrid from './builder/workgrid.js';
 import BuilderMouseMove from './builder/buildermousemove.js';
 import BuilderMenu from './builder/buildermenu.js';
-import WorkGrid from './builder/workgrid.js';
 import KeyControl from './builder/keycontrol.js'
+import Core from './core/core.js';
+import Conf from "./core/conf.js";
 
 /**
  * init ThreeJS
  */
-const scene = new THREE.Scene();
-const renderer = initRenderer('rgb(150,150,150)');
-const light = initDefaultBasicLight(scene);
+const core = new Core(Conf.DEFAULT_BUILDER_SIZE);
 
-const camera = initCamera(new THREE.Vector3(0, 25, 35));
-const orbit = new OrbitControls( camera, renderer.domElement );
+const scene = core.scene;
+const renderer = core.renderer;
 
-// change Orbit mouse control, LEFT click is used to add blocks
-orbit.mouseButtons = {
-    LEFT: '',
-    MIDDLE: THREE.MOUSE.PAN,
-    RIGHT: THREE.MOUSE.ROTATE
-};
-
-// Listen window size changes
-window.addEventListener('resize', function() {
-    onWindowResize(camera, renderer)
-}, false);
-
-// help screen (auto hides in 5 secs)
-let infoBox = new InfoBox();
-    infoBox.add("Builder -> T to show/hide");
-    infoBox.addParagraph();
-    infoBox.add("Use mouse to interact:");
-    infoBox.add("* Q/Left button to create a block");
-    infoBox.add("* E/Delete button to remove a block");
-    infoBox.add("* Middle button to translate (pan)");
-    infoBox.add("* Right button to translate (rotate)");
-    infoBox.add("* Scroll to zoom in/out."); 
-    infoBox.add("* ,/. to select a block."); 
-    infoBox.show();
-
-function toggleInfoBox() {
-    infoBox.infoBox.style.display = infoBox.infoBox.style.display == '' ? 'none' : '';
-}
-
-setTimeout(() => {
-    infoBox.infoBox.style.display = 'none';
-}, 5000);
-
-
-/**
- * init Builder
- */
+// three js
+const camera = core.camera;
+const orbit = core.orbit;
 
 // workspace
-const blockRender = new BlockRenderer(scene);
-const workGrid = new WorkGrid(scene, false);
-const workspace = new WorkSpace({
-    blockRender,
-    workGrid,
-    camera
-}, null, Conf.DEFAULT_BUILDER_SIZE);
+const workspace = core.workspace;
+
 
 // navigation block
-const navigate = new NavigateBlock(scene, workspace);
+const navigate = new NavigateBlock(core.scene, workspace);
 navigate.setPos(workspace.centerPos.x, 0, workspace.centerPos.z);
 
 // menu
-const mouseMove = new BuilderMouseMove(camera, navigate, blockRender);
+const mouseMove = new BuilderMouseMove(core.camera, navigate, core.blockRender);
 const menu = new BuilderMenu(workspace, mouseMove);
 menu.createMenu();
 
@@ -100,13 +52,27 @@ workspace.setOnLoad(() => {
 centerCamera();
 
 
+// help screen (auto hides in 5 secs)
+let infoBox = new InfoBox();
+    infoBox.add("Builder -> T to show/hide");
+    infoBox.addParagraph();
+    infoBox.add("Use mouse to interact:");
+    infoBox.add("* Q/Left button to create a block");
+    infoBox.add("* E/Delete button to remove a block");
+    infoBox.add("* Middle button to translate (pan)");
+    infoBox.add("* Right button to translate (rotate)");
+    infoBox.add("* Scroll to zoom in/out."); 
+    infoBox.add("* ,/. to select a block."); 
+    infoBox.show();
+
+
 
 /**
  * init mouse and keyboard
  */
 mouseMove.register();
 
-KeyControl.init(workspace, navigate, mouseMove, toggleInfoBox);
+KeyControl.init(workspace, navigate, mouseMove, () => {});
 
 window.addEventListener('click', (event) => {
     const pos = mouseMove.getAddPos();
@@ -130,5 +96,5 @@ function render()
     KeyControl.keyboardUpdate();
     mouseMove.update(workspace);
 
-    renderer.render(scene, camera);
+    renderer.render(core.scene, core.camera);
 }

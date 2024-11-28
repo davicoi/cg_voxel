@@ -5,10 +5,23 @@ const modelsName = [
     'tree1', 'tree2', 'tree3', 'tree4', 'tree5'
 ];
 
+let instBlockModels = null;
 
 export default class BlockModels {
     /** @type [{ModelData}] */
     modelList = [];
+
+    constructor() {
+        if (instBlockModels)
+            throw new ReferenceError("ERROR: Only 1 instance of Blocks() is allowed.");
+        instBlockModels = this;
+    }
+
+    static getInstance() {
+        if (!instBlockModels)
+            instBlockModels = new BlockModels();
+        return instBlockModels;
+    }
 
     /** Loads all models */
     async loadAll() {
@@ -54,5 +67,14 @@ export default class BlockModels {
             console.error(err);
             return null;
         });
+    }
+
+    countOf(baseName) {
+        let count = 0;
+        for (let i = 0 ; i < modelsName.length ; i++) {
+            if (modelsName[i].startsWith(baseName))
+                count++;
+        }
+        return count;
     }
 }

@@ -5,7 +5,7 @@ import CoordConverter from './coordconverter.js';
 
 const blocks = Blocks.getInstance();
 
-export default class BuilderBlockRenderer {
+export default class BlockRenderer {
     /** @type {THREE.Scene} */
     scene;
     /** @type {Workspace} */

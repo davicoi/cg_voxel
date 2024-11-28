@@ -1,43 +1,11 @@
-import * as THREE from    '../build/three.module.js';
-import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
-import {initRenderer,
-        initCamera,
-        initDefaultBasicLight,
-        onWindowResize } from "../libs/util/util.js";
-
-import Conf from './core/conf.js';
-import WorkSpace from './core/workspace.js';
-import BlockRenderer from './core/blockrenderer.js';
-import BuilderMouseMove from './builder/buildermousemove.js';
+import Core from './core/core.js';
+import MouseMove from './core/mousemove.js';
 import WorkGrid from './builder/workgrid.js';
 import KeyControl from './builder/keycontrol.js'
 import PreviewBlock from './core/previewblock.js';
 import MapGenerator from './core/mapgenerator.js';
 import FloatingBox from './other/floatingbox.js';
-import BlockModels from './core/blockmodels.js';
-
-/**
- * init ThreeJS
- */
-const scene = new THREE.Scene();
-/** @type {THREE.WebGLRenderer}; */
-const renderer = initRenderer('rgb(150,150,150)');
-const light = initDefaultBasicLight(scene);
-
-const camera = initCamera(new THREE.Vector3(0, 25, 35));
-const orbit = new OrbitControls( camera, renderer.domElement );
-
-// change Orbit mouse control, LEFT click is used to add blocks
-orbit.mouseButtons = {
-    LEFT: '',
-    MIDDLE: THREE.MOUSE.PAN,
-    RIGHT: THREE.MOUSE.ROTATE
-};
-
-// Listen window size changes
-window.addEventListener('resize', function() {
-    onWindowResize(camera, renderer)
-}, false);
+import Conf from './core/conf.js';
 
 
 
@@ -45,45 +13,40 @@ window.addEventListener('resize', function() {
 /**
  * init Builder
  */
+const core = new Core(Conf.DEFAULT_SIZE);
+
+// three js
+const camera = core.camera;
+const orbit = core.orbit;
 
 // workspace
-const blockRender = new BlockRenderer(scene);
-const workGrid = new WorkGrid(scene, false);
-const workspace = new WorkSpace({
-    blockRender,
-    workGrid,
-    camera
-}, null, Conf.DEFAULT_SIZE);
-const blockModels = new BlockModels();
-
-
-
+const workspace = core.workspace;
 
 // navigation block
-const navigate = new PreviewBlock(scene, workspace);
+const navigate = new PreviewBlock(core.scene, workspace);
 navigate.setPos(workspace.centerPos.x, 0, workspace.centerPos.z);
 
 // menu
-const mouseMove = new BuilderMouseMove(camera, navigate, blockRender);
+const mouseMove = new MouseMove(camera, navigate, core.blockRender);
 
 
 // centers the camera whenever a model is created/loaded
 // FIXME: random errors after centering
 function centerCamera() {
     const size = workspace.getModelData().getSize();
-    const centerX = parseInt(size / 2) * workspace.cubeSize;
-    const centerY = parseInt(size / 2) * workspace.cubeSize;
-    orbit.target.set(centerX, 0, centerY);
+    const centerX = parseInt(size / 2) * Conf.CUBE_SIZE;
+    const centerZ = parseInt(size / 2) * Conf.CUBE_SIZE;
+    const centerY = core.model.firstEmptyFrom(centerX, centerZ) * Conf.CUBE_SIZE;
+
+    orbit.target.set(centerX, 0, centerZ);
 
     camera.position.x = centerX;
-    camera.position.z = 75 + centerY;
-    camera.position.y = 50;
+    camera.position.z = 75 + centerZ;
+    camera.position.y = 50 + centerY;
 }
 workspace.setOnLoad(() => {
     centerCamera();
 });
-centerCamera();
-
 
 
 /**
@@ -102,21 +65,15 @@ window.addEventListener('click', (event) => {
 }, false);
 
 
-let seed = Math.random() * 65535 | 0;
-// 23772, 26457, 48459, 31045, 22946
-//seed = 22946;
-MapGenerator.create(workspace.getModelData().getSize(), 3, 15, seed);
-
-
 
 function createFPSBox() {
     const info = new FloatingBox('info');
 
     let lastFrame = 0;
     setInterval(() => {
-        const fps = renderer.info.render.frame - lastFrame;
-        lastFrame = renderer.info.render.frame;
-        info.setText(`FPS: ${fps}<br/>Calls: ${renderer.info.render.calls}<br/>Triangles: ${renderer.info.render.triangles}`);
+        const fps = core.renderer.info.render.frame - lastFrame;
+        lastFrame = core.renderer.info.render.frame;
+        info.setText(`FPS: ${fps}<br/>Calls: ${core.renderer.info.render.calls}<br/>Triangles: ${core.renderer.info.render.triangles}`);
     }, 1000);
 
     return info;
@@ -132,15 +89,19 @@ function render()
     KeyControl.keyboardUpdate();
     mouseMove.update(workspace);
 
-    renderer.render(scene, camera);
+    core.renderer.render(core.scene, camera);
 }
 
 
 async function main() {
-    await blockModels.loadAll();
+    await core.blockModels.loadAll();
     createFPSBox();
 
-    workspace.addModel(blockModels.get('tree1'), workspace.centerPos);
+    let seed = Math.random() * 65535 | 0;
+// 23772, 26457, 48459, 31045, 22946
+//seed = 22946;
+    MapGenerator.create(workspace.getModelData(), 3, 15, seed);
+    centerCamera();
 
     render();
 }

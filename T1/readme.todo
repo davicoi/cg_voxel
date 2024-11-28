@@ -6,7 +6,9 @@ Engine:
   ☐ random trees (3)
   ☐ first person camera (3)
   ☐ use initDefaultBasicLight(scene) (1)
-  ☐ organize objects used at startup
+  ✔ organize objects used at startup
+  ☐ create camera manager
+  ☐ fix workgrid
 
   ☐ menu
   ☐ raycaster

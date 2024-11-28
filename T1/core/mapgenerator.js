@@ -1,7 +1,7 @@
 import Perlin from "../other/perlin.js";
+import BlockModels from "./blockmodels.js";
 import ModelData from "./modeldata.js";
 import Position from "./position.js";
-import WorldModel from "./worldmodel.js";
 
 
 export default class MapGenerator {
@@ -14,11 +14,8 @@ export default class MapGenerator {
         const perlin = new Perlin(seed);
 
         let pos = new Position(0, 0, 0);
-
-        //const map = [];
         let num, raw;
         for (pos.z = 0 ; pos.z < gridsize ; pos.z++) {
-            //map[y] = [];
             for (pos.x = 0; pos.x < gridsize; pos.x++) {
                 num = perlin.noise(pos.x, pos.z, 1, smooth);
                 raw = (num / 2) + 0.5;
@@ -26,8 +23,6 @@ export default class MapGenerator {
                 num = Math.floor(raw * valueRange);
                 num = Math.min(num, valueRange);
 
-                //map[y][x] = num;
-                
                 MapGenerator.setByHeight(model, pos, num);
             }
         }
@@ -37,7 +32,7 @@ export default class MapGenerator {
      * 
      * @param {ModelData} model 
      * @param {Position} pos
-     * @param {*} height 
+     * @param {number} height 
      */
     static setByHeight(model, pos, height) {
         for (let y = 0 ; y < height ; y++) {
@@ -49,12 +44,87 @@ export default class MapGenerator {
     }
 
 
-    static create(size, blockRange, smooth = 30, seed = 0) {
-        /** @type {ModelData} */
-        const model = WorldModel.getModel();
-
+    /**
+     * 
+     * @param {ModelData} model 
+     * @param {number} blockRange 
+     * @param {number} smooth 
+     * @param {number} seed 
+     */
+    static create(model, blockRange, smooth = 30, seed = 0) {
+        const size = model.getSize();
         MapGenerator.generatePerlin(model, size, blockRange, smooth, seed);
 
+        const list = MapGenerator.randomTrees(model);
+        MapGenerator.addTrees(model, list);
     }
 
+    /**
+     * 
+     * @param {ModelData} model 
+     */
+    static randomTrees(model) {
+        const size = model.getSize();
+        const dist = 7;
+        const treeDist = 5;
+        const min = Math.max(6, Math.pow(size/(dist*2), 2));
+
+        //const list = [{left: 5-treeDist, top: 5-treeDist, right: 5+treeDist, bottom: 5+treeDist, x: 5, y: 5}];
+        const list = [];
+
+        let x, y, count = 0, add = false;
+        let left, right, top, bottom;
+
+        const size2 = size - treeDist*2
+        while (list.length < min && count++ < min*5) {
+            x = treeDist + Math.random() * size2 | 0;
+            y = treeDist + Math.random() * size2 | 0;
+
+            add = true;
+            for (let i = 0 ; i < list.length ; i++) {
+                if (x >= list[i].left && x < list[i].right && y >= list[i].top && y < list[i].bottom) {
+                    add = false;
+                    break;
+                }
+            }
+
+            if (!add)
+                continue;
+
+            left = x - treeDist;
+            right = x + treeDist;
+            top = y - treeDist;
+            bottom = y + treeDist;
+
+            if (left >= 0 && right < size && top >= 0 && bottom < size) {
+                list.push({left, top, right, bottom, x, y});
+            }
+        }
+
+        return list;
+    }
+
+    /**
+    * 
+     * @param {ModelData} model 
+    */
+    static addTrees(model, list) {
+        const blockModels = BlockModels.getInstance();
+        const treeCount = blockModels.countOf('tree');
+
+        let modelName, r, pos;
+        for (let i = 0 ; i < list.length ; i++) {
+            const y = model.firstEmptyFrom(list[i].x, list[i].y);
+            if (y < 0)
+                continue;
+
+            r = Math.random() * treeCount | 0;
+            modelName = 'tree' + (r + 1);
+
+            pos = new Position(list[i].x, y, list[i].y);
+            const treeModel = blockModels.get(modelName);
+            if (treeModel)
+                model.addModel(treeModel, pos);
+        }
+    }
 }
