@@ -98,9 +98,9 @@ async function main() {
     createFPSBox();
 
     let seed = Math.random() * 65535 | 0;
-// 23772, 26457, 48459, 31045, 22946
-//seed = 22946;
-    MapGenerator.create(workspace.getModelData(), 3, 15, seed);
+//    MapGenerator.create(workspace.getModelData(), 3, 15, seed);
+    MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
+
     centerCamera();
 
     render();

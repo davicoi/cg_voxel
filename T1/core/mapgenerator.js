@@ -127,4 +127,94 @@ export default class MapGenerator {
                 model.addModel(treeModel, pos);
         }
     }
+
+    static perlinArray(model, gridsize = 128, smooth = 50, seed = null) {
+        if (!seed || seed <= 0) seed = Math.floor(Math.random() * 65536);
+        const perlin = new Perlin(seed);
+
+        const map = new Uint8Array(gridsize * gridsize);
+        const dist = []
+
+        dist.fill()
+        for (let i = 0 ; i < 256 ; i++)
+            dist.push(0);
+
+        let pos = new Position(0, 0, 0);
+        let num, raw, idx = 0;
+        for (pos.z = 0 ; pos.z < gridsize ; pos.z++) {
+            for (pos.x = 0; pos.x < gridsize; pos.x++) {
+                num = perlin.noise(pos.x, pos.z, 1, smooth);
+                raw = (num / 2) + 0.5;
+
+                num = Math.floor(raw * 256);
+                if (num > 256)
+                    num = 256;
+
+                map[idx++] = num;
+                dist[num]++;
+            }
+        }
+
+        return {map, dist};
+    }
+
+    static distByPerc(dist, percList, total) {
+        const numList = [];
+
+        let count = 0;
+        let minPerc = percList[0];
+        for (let i = 0 ; i < dist.length ; i++) {
+            count += dist[i];
+            if (count / total > minPerc) {
+                numList.push(i);
+                count = 0;
+                minPerc = percList[numList.length];
+                if (numList.length >= percList.length)
+                    break;
+            }
+        }
+
+        if (numList.length < percList.length)
+            numList.push(256)
+
+        return numList;
+    }
+
+    static normalizeByPerc(map, numList) {
+        let heightValue = [];
+
+        let count = 0;
+        numList.forEach((num, i) => {
+            for (; count < num ; count++) {
+                heightValue.push(i);
+            }
+        });
+
+        return heightValue;
+    }
+
+
+    static createByPerc(model, smooth = 50, seed = null) {
+        const gridsize = model.getSize();
+        const {map, dist} = MapGenerator.perlinArray(model, gridsize, smooth, seed);
+
+        const percList = [0.5, 0.35, 0.15];
+        const numList = MapGenerator.distByPerc(dist, percList, gridsize*gridsize);
+
+        const height = MapGenerator.normalizeByPerc(map, numList);
+
+
+        const pos = new Position(0, 0, 0);
+        let val, idx = 0;
+        for (pos.z = 0 ; pos.z < gridsize ; pos.z++) {
+            for (pos.x = 0 ; pos.x < gridsize ; pos.x++) {
+                val = height[ map[idx++] ];
+                MapGenerator.setByHeight(model, pos, val);
+            }
+        }
+
+        const list = MapGenerator.randomTrees(model);
+        MapGenerator.addTrees(model, list);
+    }
+
 }

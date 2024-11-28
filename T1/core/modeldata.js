@@ -175,7 +175,7 @@ export default class ModelData {
      */
     forEachBlock(callback) {
         const pos = new Position(0, 0, 0);
-        const height = this.highestBlock;
+        const height = Math.max(this.highestBlock, this.height);
 
         let id;
         for (pos.y = 0 ; pos.y < height ; pos.y++) {
