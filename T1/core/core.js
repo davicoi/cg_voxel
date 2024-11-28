@@ -75,7 +75,7 @@ export default class Core {
         };
         
         // Listen window size changes
-        window.addEventListener('resize', function() {
+        window.addEventListener('resize', () => {
             onWindowResize(this.camera, this.renderer)
         }, false);
     }

@@ -69,7 +69,7 @@ export default class Workspace {
      * @param {Position} pos 
      */
     set(id, pos) {
-        this.modelData.set(id, pos);
+        this.blockRender.set(id, pos);
     }
 
     /**
@@ -111,10 +111,7 @@ export default class Workspace {
             this.workGrid.setGridSize(this.gridSize);
         }
 
-        if (this.blockRender) {
-            this.modelData.setBlockRender(this.blockRender);
-            this.modelData.reloadBlocks();
-        }
+        this.redraw();
 
         if (this.funcOnLoad)
             this.funcOnLoad(this);
@@ -152,5 +149,10 @@ export default class Workspace {
             p.set(pos.x + x, pos.y + y, pos.z + z);
             this.set(id, p);
         });
+    }
+
+    redraw() {
+        if (this.blockRender)
+            this.blockRender.redraw();
     }
 }

@@ -199,6 +199,7 @@ export default class MapGenerator {
         const {map, dist} = MapGenerator.perlinArray(model, gridsize, smooth, seed);
 
         const percList = [0.5, 0.35, 0.15];
+        //const percList = [0.4, 0.25, 0.17, 0.12, 0.06];
         const numList = MapGenerator.distByPerc(dist, percList, gridsize*gridsize);
 
         const height = MapGenerator.normalizeByPerc(map, numList);

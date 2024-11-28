@@ -4,5 +4,8 @@
     "target": "ES6"
   },
   "exclude": ["examples", "exercises", "html", "libs/aframe", "libs/aframe", "libs/AR", "libs/other", "libs/pathTracing", "libs/rayTracing"],
-  "include": ["build", "libs/util", "T1"]
+  "include": ["build", "libs/util", "T1"],
+
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.preferences.importModuleSpecifierEnding": "js",
 }

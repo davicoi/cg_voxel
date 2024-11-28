@@ -32,9 +32,9 @@ export default class Position {
     }
 
     getRef() {
-        return  x.toString(16).padStart(WorldLimit.WIDTH_BYTES * 2, '0') +
-                y.toString(16).padStart(WorldLimit.DEPTH_BYTES * 2, '0') +
-                z.toString(16).padStart(WorldLimit.HEIGHT_BYTES * 2, '0');
+        return  this.x.toString(16).padStart(WorldLimit.WIDTH_BYTES * 2, '0') +
+                this.y.toString(16).padStart(WorldLimit.DEPTH_BYTES * 2, '0') +
+                this.z.toString(16).padStart(WorldLimit.HEIGHT_BYTES * 2, '0');
     }
 
     static refFrom(x, y, z) {

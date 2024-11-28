@@ -2,10 +2,16 @@ import * as THREE from  '../../build/three.module.js';
 import Workspace from './workspace.js';
 import Blocks from './blocks.js';
 import CoordConverter from './coordconverter.js';
+import Position from './position.js';
+import Core from './core.js';
 
 const blocks = Blocks.getInstance();
 
+// TODO: draw non-visible blocks
+
 export default class BlockRenderer {
+    /** @type {Core} */
+    core = Core.getInstance();
     /** @type {THREE.Scene} */
     scene;
     /** @type {Workspace} */
@@ -41,11 +47,52 @@ export default class BlockRenderer {
         return this.blockList;
     }
 
-    /** Change block */
-    set(ref, id, pos) {
+    /**
+     * 
+     * @param {number} id 
+     * @param {Position} pos 
+     */
+    set(id, pos) {
+        if (!this.core.model.set(id, pos))
+            return;
+
+        const ref = pos.getRef();
         if (this.blockMap[ref])
             this.removeBlock(ref);
-        this.createBlock(ref, id, pos);
+
+
+        if (id >= 1)
+            this.createBlock(ref, id, pos);
+
+        this.setNeighborsVisibility(pos);
+    }
+
+    setVisibility(pos, visible) {
+        console.log ({...pos, visible});
+        const ref = pos.getRef();
+        if (!visible) {
+            if (this.blockMap[ref])
+                this.removeBlock(ref);
+        } else if (!this.blockMap[ref]) {
+            this.createBlock(ref, this.core.model.get(pos), pos);
+        }
+    }
+
+    setNeighborsVisibility(pos) {
+        const p = pos.clone();
+        const addPos = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
+
+        console.log('setNeighborsVisibility');
+        addPos.forEach(([x, y, z]) => {
+            p.x = pos.x + x;
+            p.y = pos.y + y;
+            p.z = pos.z + z;
+            this.setVisibility(p, this.core.model.countNeighbors(p) < 6);
+        })
+    }
+
+    get(pos) {
+        return this.core.model.get(pos);
     }
 
     /** Remove/destroy a block */
@@ -92,5 +139,24 @@ export default class BlockRenderer {
         list.add.forEach(item => {
             this.set(item.ref, item.id, item.pos);
         });
+    }
+
+    /** recreate all blocks */
+    redraw() {
+        this.clear();
+
+        let ref, pos = new Position();
+        this.workspace.getModelData().forEachBlock((id, x, y, z) => {
+            pos.x = x;
+            pos.y = y;
+            pos.z = z;
+
+            // don't add non-visible blocks
+            if (this.core.model.countNeighbors(pos) == 6)
+                return;
+
+            ref = pos.getRef();
+            this.createBlock(ref, id, pos);
+        })
     }
 }

@@ -1,4 +1,3 @@
-import BlockRenderer from './blockrenderer.js';
 import { hexToUint8, trimmedUint8ToHex } from '../other/uint8conv.js';
 import Position from './position.js';
 import WorldLimit from './worldlimit.js';
@@ -12,8 +11,6 @@ export default class ModelData {
     /** @type {Position} */
     center = new Position();
 
-    /** @type {BlockRenderer} Block rendere instance, needs to have updateList function */
-    blockRender;
 
 
     /**
@@ -47,26 +44,6 @@ export default class ModelData {
 
     getHeight() {
         return this.height;
-    }
-
-    /** recreate all blocks */
-    reloadBlocks() {
-        this.blockRender.clear();
-
-        this.forEachBlock((id, x, y, z) => {
-            this.getAndSet(x, y, z);
-        });
-    }
-
-    // FIXME: refactor to block renderer
-    getAndSet(x, y, z) {
-        const pos = {x, y, z};
-        const idx = this.indexOf(pos)
-        const ref = Position.refFrom(x, y, z);
-
-        this.blockRender.updateList({ add: [
-            {id: this.data[idx], pos, ref}
-        ], remove: []});
     }
 
     /** Load model from json */
@@ -125,21 +102,14 @@ export default class ModelData {
      */
     set(id, pos) {
         const idx = this.indexOf(pos);
-        if (idx < 0 || this.data[idx] == id)
-            return;
+        if (idx < 0)
+            return false;
 
         if (pos.y > this.highestBlock && id)
             this.highestBlock = pos.y;
 
         this.data[idx] = id;
-
-        // FIXME: refactor to block renderer
-        if (this.blockRender) {
-            const ref = Position.refFrom(pos.x, pos.y, pos.z);
-            this.blockRender.updateList({ add: [
-                {id, pos, ref}
-            ], remove: []});
-        }
+        return true;
     }
 
     /**
@@ -148,26 +118,8 @@ export default class ModelData {
      */
     get(pos) {
         const idx = this.indexOf(pos)
-        return idx < 0 ? 0 : this.data[idx];
+        return idx < 0 ? -1 : this.data[idx];
     }
-
-    /**
-     * Set block rendered, update blocks in batch
-     * obj.updateList ({ add: [{id, x, y, z, ref}], remove: [{id, x, y, z, ref}] });
-     * @param {*} renderObj 
-     */
-    // FIXME: add > 1 && remove
-    setBlockRender(renderObj) {
-        this.blockRender = renderObj;
-    }
-
-    // /** calculate the maximum height where there is a block */
-    // calcHighestBlock() {
-    //     let p = this.data.length - 1;
-    //     for (; p >= 0 && !this.data[p] ; p--);
-    //     p += this.size * this.size - 1;
-    //     return p / (this.size * this.size) | 0;
-    // }   
 
     /**
      * Iterate over existing blocks
@@ -212,5 +164,29 @@ export default class ModelData {
                 return y;
         }
         return -1;
+    }
+
+    countNeighbors(pos) {
+        let idx = this.indexOf(pos);
+        let count = 0;
+        const size = this.size;
+        const ysize = size * size;
+
+        if (pos.x - 1 < 0 || pos.x - 1 >= size || this.data[idx - 1])
+            count++;
+        if (pos.x + 1 < 0 || pos.x + 1 >= size || this.data[idx + 1])
+            count++;
+
+        if (pos.z - 1 < 0 || pos.z - 1 >= size || this.data[idx - size])
+            count++;
+        if (pos.z + 1 < 0 || pos.z + 1 >= size || this.data[idx + size])
+            count++;
+
+        if (pos.y - 1 < 0 || pos.y - 1 >= this.height || this.data[idx - ysize])
+            count++;
+        if (pos.y + 1 < 0 || pos.y + 1 >= this.height || this.data[idx + ysize])
+            count++;
+
+        return count;
     }
 }
