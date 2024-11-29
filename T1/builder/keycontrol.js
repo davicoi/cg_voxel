@@ -3,6 +3,7 @@ import KeyboardState from '../../libs/util/KeyboardState.js';
 import BuilderMouseMove from './buildermousemove.js';
 import NavigateBlock from './navigateblock.js';
 import Blocks from '../core/blocks.js';
+import Core from '../core/core.js';
 
 /** @type {KeyboardState} */
 let keyboard;
@@ -25,7 +26,9 @@ const blockList = Blocks.getInstance();
  * @param {BuilderMouseMove} _mouseMove 
  */
 export function init(_workspace, _navigate, _mouseMove, callbackToggleBox) {
-    keyboard = new KeyboardState();
+    const core = Core.getInstance();
+    //keyboard = new KeyboardState();
+    keyboard = core.keyboard;
     navigate = _navigate;
     workspace = _workspace;
     mouseMove = _mouseMove;
@@ -71,8 +74,13 @@ export function keyboardUpdate() {
             workspace.set(0, pos);
     }
 
-    if (funcToggle && keyboard.down("Tt"))
+    if (funcToggle && keyboard.down("T"))
         funcToggle();       
+
+    if (keyboard.down("C") ) {
+        const core = Core.getInstance();
+        core.camControl.toggle();
+    }
 }
 
 

@@ -11,14 +11,12 @@ import Conf from "./core/conf.js";
 /**
  * init ThreeJS
  */
-const core = new Core(Conf.DEFAULT_BUILDER_SIZE);
+const core = new Core(Conf.DEFAULT_BUILDER_SIZE, 0, 25, 20);
+core.blockRender.optimize(false);
 
-const scene = core.scene;
-const renderer = core.renderer;
+const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
+core.camControl.initOrbit(centerPos, 25, 20 + centerPos);
 
-// three js
-const camera = core.camera;
-const orbit = core.orbit;
 
 // workspace
 const workspace = core.workspace;
@@ -33,19 +31,19 @@ const mouseMove = new BuilderMouseMove(core.camera, navigate, core.blockRender);
 const menu = new BuilderMenu(workspace, mouseMove);
 menu.createMenu();
 
-
 // centers the camera whenever a model is created/loaded
-// FIXME: random errors after centering
 function centerCamera() {
     const size = workspace.getModelData().getSize();
-    const centerX = parseInt(size / 2) * workspace.cubeSize;
-    const centerY = parseInt(size / 2) * workspace.cubeSize;
-    orbit.target.set(centerX, 0, centerY);
+    const centerPos = parseInt(size / 2) * workspace.cubeSize;
+    
+    core.camControl.setTarget(centerPos, 0, centerPos);
 
-    camera.position.x = centerX;
-    camera.position.z = 25 + centerY;
-    camera.position.y = 20;
+    core.camera.position.x = centerPos;
+    core.camera.position.z = 15 + centerPos;
+    core.camera.position.y = 15;
+    core.camControl.update();
 }
+
 workspace.setOnLoad(() => {
     centerCamera();
 });
@@ -84,7 +82,6 @@ window.addEventListener('click', (event) => {
 
 
 
-
 /**
  * main loop
  */
@@ -96,5 +93,5 @@ function render()
     KeyControl.keyboardUpdate();
     mouseMove.update(workspace);
 
-    renderer.render(core.scene, core.camera);
+    core.renderer.render(core.scene, core.camera);
 }

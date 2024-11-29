@@ -159,6 +159,8 @@ export default class ModelData {
 
     firstEmptyFrom(x, z) {
         const max = Math.max(this.height, this.highestBlock + 1);
+        x = x | 0;
+        z = z | 0;
         for (let y = 0 ; y < max ; y++) {
             if (this.get({x, y, z}) == 0)
                 return y;

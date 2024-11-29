@@ -37,7 +37,7 @@ export default class WorkGrid {
 
     setGridSize(size) {
         this.gridSize = size;
-        this.addPos = size % 2 != 0 ? 0 : parseInt(Conf.CUBE_SIZE / 2);
+        this.addPos = size % Conf.CUBE_SIZE != 0 ? 0 : Conf.CUBE_SIZE / 2;
 
         this.destroyAll();
         this.createGrid(this.scene);
@@ -52,8 +52,6 @@ export default class WorkGrid {
      * @param {THREE.scene} scene 
      */
     createGrid(scene) {
-        const addPos = this.gridSize % 2 != 0 ? 0 : parseInt(Conf.CUBE_SIZE / 2);
-
         this.grid = new THREE.GridHelper(this.gridSize * Conf.CUBE_SIZE, this.gridSize, 0xFF0000, 0x00FF00);
         this.grid.position.x = this.gridSize/2 * Conf.CUBE_SIZE - this.addPos;
         this.grid.position.y = -Conf.CUBE_SIZE/2;

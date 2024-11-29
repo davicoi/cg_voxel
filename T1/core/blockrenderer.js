@@ -10,6 +10,8 @@ const blocks = Blocks.getInstance();
 // TODO: draw non-visible blocks
 
 export default class BlockRenderer {
+    optimizeBlocks = true;
+
     /** @type {Core} */
     core = Core.getInstance();
     /** @type {THREE.Scene} */
@@ -27,10 +29,15 @@ export default class BlockRenderer {
      */
     constructor(scene) {
         this.scene = scene;
+        this.optimizeBlocks = true;
     }
 
     setWorkspace(workspace) {
         this.workspace = workspace;
+    }
+
+    optimize(enable) {
+        this.optimizeBlocks = enable;
     }
 
     clear() {
@@ -45,6 +52,11 @@ export default class BlockRenderer {
     /** Returns a list of all blocks */
     getBlockList() {
         return this.blockList;
+    }
+
+    getBlockByPos(pos) {
+        const ref = Position.refFrom(pos.x, pos.y, pos.z);
+        return this.blockMap[ref] || null;
     }
 
     /**
@@ -64,11 +76,11 @@ export default class BlockRenderer {
         if (id >= 1)
             this.createBlock(ref, id, pos);
 
-        this.setNeighborsVisibility(pos);
+        if (this.optimizeBlocks)
+            this.setNeighborsVisibility(pos);
     }
 
     setVisibility(pos, visible) {
-        console.log ({...pos, visible});
         const ref = pos.getRef();
         if (!visible) {
             if (this.blockMap[ref])
@@ -82,7 +94,6 @@ export default class BlockRenderer {
         const p = pos.clone();
         const addPos = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
 
-        console.log('setNeighborsVisibility');
         addPos.forEach(([x, y, z]) => {
             p.x = pos.x + x;
             p.y = pos.y + y;
@@ -152,7 +163,7 @@ export default class BlockRenderer {
             pos.z = z;
 
             // don't add non-visible blocks
-            if (this.core.model.countNeighbors(pos) == 6)
+            if (this.optimizeBlocks && this.core.model.countNeighbors(pos) == 6)
                 return;
 
             ref = pos.getRef();

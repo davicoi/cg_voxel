@@ -1,3 +1,4 @@
+import * as THREE from    '../../build/three.module.js';
 import Core from './core/core.js';
 import MouseMove from './core/mousemove.js';
 import WorkGrid from './builder/workgrid.js';
@@ -13,11 +14,16 @@ import Conf from './core/conf.js';
 /**
  * init Builder
  */
-const core = new Core(Conf.DEFAULT_SIZE);
+const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35);
+
+const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
+core.camControl.initPointerLock(centerPos, 8, centerPos);
+core.camControl.initOrbit(centerPos, 25, 35 + centerPos);
+
+
 
 // three js
 const camera = core.camera;
-const orbit = core.orbit;
 
 // workspace
 const workspace = core.workspace;
@@ -33,18 +39,25 @@ const mouseMove = new MouseMove(camera, navigate, core.blockRender);
 // centers the camera whenever a model is created/loaded
 // FIXME: random errors after centering
 function centerCamera() {
-    const size = workspace.getModelData().getSize();
+    const size = core.mapData.getSize();
     const centerX = parseInt(size / 2) * Conf.CUBE_SIZE;
     const centerZ = parseInt(size / 2) * Conf.CUBE_SIZE;
-    const centerY = core.model.firstEmptyFrom(centerX, centerZ) * Conf.CUBE_SIZE;
+    const centerY = core.mapData.firstEmptyFrom(centerX, centerZ) * Conf.CUBE_SIZE;
 
-    orbit.target.set(centerX, 0, centerZ);
+    if (core.camControl.isOrbit()) {
+        core.camControl.setTarget(centerX, 0, centerZ);
+        core.camControl.setPosition(centerX, 15, 50);
+        core.camControl.update();
 
-    camera.position.x = centerX;
-    camera.position.z = 75 + centerZ;
-    camera.position.y = 50 + centerY;
+
+    } else {
+        core.camControl.setPosition(centerX, centerY, centerZ);
+    }
+
 }
+
 workspace.setOnLoad(() => {
+//    core.camControl.centerCamera();
     centerCamera();
 });
 
@@ -58,10 +71,12 @@ KeyControl.init(workspace, navigate, mouseMove, null);
 
 window.addEventListener('click', (event) => {
     const pos = mouseMove.getAddPos();
-    if (pos) {
+    if (core.camControl.pointerLock.isLocked && pos) {
         workspace.set(workspace.selectedBlock, pos);
         mouseMove.clearPos();
     }
+
+    core.camControl.pointerLock.lock();
 }, false);
 
 
@@ -73,21 +88,34 @@ function createFPSBox() {
     setInterval(() => {
         const fps = core.renderer.info.render.frame - lastFrame;
         lastFrame = core.renderer.info.render.frame;
-        info.setText(`FPS: ${fps}<br/>Calls: ${core.renderer.info.render.calls}<br/>Triangles: ${core.renderer.info.render.triangles}`);
+
+        let camPos;
+        if (core.camControl.active && core.camControl.active.position)
+            camPos = `c: ${core.camControl.active.position.x}, ${core.camControl.active.position.y}, ${core.camControl.active.position.z}`;
+        else
+            camPos = `o: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}`;
+    
+        info.setText(`FPS: ${fps}<br/>Calls: ${core.renderer.info.render.calls}<br/>Triangles: ${core.renderer.info.render.triangles}<br/>${camPos}`);
     }, 1000);
 
     return info;
 }
+
+
 
 /**
  * main loop
  */
 function render()
 {
+    const delta = core.clock.getDelta();
     requestAnimationFrame(render);
 
     KeyControl.keyboardUpdate();
+    core.camControl.updateKeys(core.keyboard);
     mouseMove.update(workspace);
+
+    core.camControl.updateControl(delta);
 
     core.renderer.render(core.scene, camera);
 }
@@ -102,7 +130,7 @@ async function main() {
     MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
     workspace.redraw();
 
-    centerCamera();
+    core.camControl.centerCamera();
 
     render();
 }

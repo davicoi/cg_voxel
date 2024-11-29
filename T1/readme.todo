@@ -1,14 +1,12 @@
 
 Engine:
-  ☐ orbit camera (1)
   ☐ lower plane (invisible)
   ☐ generate map (5)
   ☐ random trees (3)
-  ☐ first person camera (3)
   ☐ use initDefaultBasicLight(scene) (1)
-  ☐ create camera manager
   ☐ fix workgrid -> remove and create a central block
   ☐ change the color of the block that the mouse is pointing to
+  ☐ fix orbit with pointerlock camera
 
   ☐ menu
   ☐ raycaster
@@ -22,9 +20,12 @@ Optimize Blocks:
   ☐ 3 -> create a single block for sequential blocks (I haven't checked how it behaves with texture yet)
 
 Builder:
-  ☐ fix camera
 
 Archive:
+  ✔ fix camera @done(24-11-28 23:29)
+  ✔ orbit camera (1) @done(24-11-28 23:29) @project(Engine)
+  ✔ first person camera (3) @done(24-11-28 23:29) @project(Engine)
+  ✔ create camera manager @done(24-11-28 23:29) @project(Engine)
   ✔ organize objects used at startup @project(Engine)
   ✔ 1 -> remove (& don't add) blocks that are surrounded by other blocks @done(24-11-28 13:07) @project(Optimize Blocks)
   ✔ load models @done(24-11-27 18:19) @project(Engine)

@@ -1,4 +1,4 @@
-const CUBE_SIZE = 2;
+const CUBE_SIZE = 1;
 
 const Conf = {
     CUBE_SIZE: CUBE_SIZE,

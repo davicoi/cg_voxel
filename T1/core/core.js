@@ -11,6 +11,10 @@ import Blocks from "./blocks.js";
 import ModelData from "./modeldata.js";
 import Workspace from "./workspace.js";
 import WorkGrid from '../builder/workgrid.js';
+import CameraControls from './cameracontrols.js';
+import KeyboardState from '../../libs/util/KeyboardState.js';
+
+
 
 /**
  * 
@@ -28,6 +32,13 @@ export default class Core {
     blocks;
     /** @type {BlockModels} */
     blockModels;
+    /** @type {CameraControls} */
+    camControl;
+    /** @type {THREE.Clock} */
+    clock;
+    /** @type {THREE.KeyboardState} */
+    keyboard = new KeyboardState();
+
 
     camera = null;
     scene;
@@ -35,12 +46,15 @@ export default class Core {
     workGrid;
 
 
-    constructor(size) {
+    constructor(size, x, y,z) {
         if (Core.instance)
             throw new ReferenceError("ERROR: Only 1 instance of Blocks() is allowed.");
         Core.instance = this;
 
+        this.clock = new THREE.Clock(true);
+
         this.initThreeJS();
+        this.initCamera(x, y, z);
         this.initWorkspace(size);
     }
 
@@ -53,31 +67,15 @@ export default class Core {
         return Core.instance;
     }
 
-    setModel(model) {
-        this.model = model;
-    }
-
-
     initThreeJS() {
         this.scene = new THREE.Scene();
-        /** @type {THREE.WebGLRenderer}; */
         this.renderer = initRenderer('rgb(150,150,150)');
         this.light = initDefaultBasicLight(this.scene);
-        
-        this.camera = initCamera(new THREE.Vector3(0, 25, 35));
-        this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
-        
-        // change Orbit mouse control, LEFT click is used to add blocks
-        this.orbit.mouseButtons = {
-            LEFT: '',
-            MIDDLE: THREE.MOUSE.PAN,
-            RIGHT: THREE.MOUSE.ROTATE
-        };
-        
-        // Listen window size changes
-        window.addEventListener('resize', () => {
-            onWindowResize(this.camera, this.renderer)
-        }, false);
+    }
+
+    initCamera(x, y, z) {
+        this.camControl = new CameraControls(this.renderer);
+        this.camera = this.camControl.init(x, y, z);
     }
 
 
