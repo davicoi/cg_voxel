@@ -19,7 +19,6 @@ export default class CameraControls {
     moveRight = false;
     rotateLeft = false;
     rotateRight = false;
-    jumpActive = false;
     speed = 5;
 
     gravityActive = true;
@@ -90,7 +89,7 @@ export default class CameraControls {
 
     updateKeys(keyboard) {
         if (this.isPointerLock()) {
-            const keyList = [['A', 'moveLeft'], ['D', 'moveRight'], ['W', 'moveForward'], ['S', 'moveBackward'], ['J', 'jumpActive']];
+            const keyList = [['A', 'moveLeft'], ['D', 'moveRight'], ['W', 'moveForward'], ['S', 'moveBackward']];
             keyList.forEach(([key, varName]) => {
                 if (keyboard.down(key))
                     this[varName] = true;
@@ -180,10 +179,6 @@ export default class CameraControls {
             this.pointerLock.moveRight(this.speed * delta);
         else if (this.moveLeft)
             this.pointerLock.moveRight(this.speed * -1 * delta);
-
-        if (this.jumpActive)
-            this.jump();
-
 
         // movement in XZ
         const pos = this.camToPosition();

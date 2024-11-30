@@ -12,6 +12,7 @@ import CameraControls from './cameracontrols.js';
 import KeyboardState from '../../libs/util/KeyboardState.js';
 import WorkGrid from '../builder/workgrid.js';
 import WorkPlane from './workplane.js';
+import Tool from './tool.js';
 
 
 
@@ -37,6 +38,8 @@ export default class Core {
     clock;
     /** @type {THREE.KeyboardState} */
     keyboard = new KeyboardState();
+    /** @type {Tool} */
+    tool = new Tool();
 
 
     camera = null;

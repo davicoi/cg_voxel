@@ -170,8 +170,9 @@ export default class BlockRenderer {
             return false;
 
         const pos = this.core.camControl.getCam2PlanePosition();
-        return (pos.x < this.recalcRect.minX || pos.x >= this.recalcRect.maxX ||
-                pos.z < this.recalcRect.minZ || pos.z >= this.recalcRect.maxZ);
+            
+        return (pos && (pos.x < this.recalcRect.minX || pos.x >= this.recalcRect.maxX ||
+                pos.z < this.recalcRect.minZ || pos.z >= this.recalcRect.maxZ));
     }
 
     update(delta) {

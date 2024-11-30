@@ -1,7 +1,7 @@
 import * as THREE from    '../../build/three.module.js';
 import Core from './core/core.js';
 import MouseMove from './core/mousemove.js';
-import KeyControl from './builder/keycontrol.js'
+import KeyControl from './core/keycontrol.js'
 import PreviewBlock from './core/previewblock.js';
 import MapGenerator from './core/mapgenerator.js';
 import FloatingBox from './other/floatingbox.js';
@@ -65,7 +65,7 @@ workspace.setOnLoad(() => {
  */
 mouseMove.register();
 
-KeyControl.init(workspace, navigate, mouseMove, null);
+KeyControl.init(navigate, mouseMove, null);
 
 window.addEventListener('click', (event) => {
     const pos = mouseMove.getAddPos();

@@ -12,8 +12,7 @@ export default class WorkPlane {
     scene;
     /** @type {THREE.GridHelper} */
     grid;
-
-    realGrid;
+    
 
     /** @type {THREE.Mesh} */
     centralPlane;
@@ -45,7 +44,6 @@ export default class WorkPlane {
         this.destroyAll();
         this.createGrid(this.scene);
         this.createCentralPlane(this.scene);
-        this.createInvisiblePlane(this.scene);
 
         if (this.showAxis)
             this.createAxis(this.scene);
@@ -57,24 +55,11 @@ export default class WorkPlane {
      */
     createGrid(scene) {
         const gridSize = this.gridSize;
-        this.realGrid = new THREE.GridHelper(gridSize * Conf.CUBE_SIZE, gridSize, 0xFF0000, 0x00FF00);
-        this.realGrid.position.x = gridSize/2 * Conf.CUBE_SIZE - this.addPos;
-        this.realGrid.position.y = -Conf.CUBE_SIZE/2;
-        this.realGrid.position.z = gridSize/2 * Conf.CUBE_SIZE - this.addPos;
-        scene.add(this.realGrid);
-    }
-
-    // used to position the OrbitCamera with the Raycaster, it is not rendered
-    createInvisiblePlane(scene) {
-        const gridSize = this.gridSize + 100;
-
-        const grid = new THREE.GridHelper(gridSize * Conf.CUBE_SIZE, gridSize, 0xFF0000, 0x00FF00);
-        grid.position.x = gridSize / 4 * Conf.CUBE_SIZE;
-        grid.position.y = -Conf.CUBE_SIZE/2;
-        grid.position.z = gridSize / 4 * Conf.CUBE_SIZE;
-        this.grid = grid
-
-        //scene.add(this.grid);
+        this.grid = new THREE.GridHelper(gridSize * Conf.CUBE_SIZE, gridSize, 0xFF0000, 0x00FF00);
+        this.grid.position.x = gridSize/2 * Conf.CUBE_SIZE - this.addPos;
+        this.grid.position.y = -Conf.CUBE_SIZE/2;
+        this.grid.position.z = gridSize/2 * Conf.CUBE_SIZE - this.addPos;
+        scene.add(this.grid);
     }
 
     /**
@@ -115,13 +100,13 @@ export default class WorkPlane {
 
     /** Destroy and remove all mesh from scene */
     destroyAll() {
-        if (!this.grid)
+        if (!this.orbitGrid)
             return;
 
         /** @type {THREE.Scene} */
-        const scene = this.grid.parent;
+        const scene = this.orbitGrid.parent;
 
-        const list = [this.grid, this.axisHelper, this.centralPlane, this.realGrid];
+        const list = [this.orbitGrid, this.axisHelper, this.centralPlane, this.grid];
         list.forEach(mesh => {
             if (mesh) {
                 scene.remove(mesh);
@@ -130,9 +115,9 @@ export default class WorkPlane {
             }
         });
 
-        this.grid = null;
+        this.orbitGrid = null;
         this.axisHelper = null;
         this.centralPlane = null;
-        this.realGrid = null;
+        this.grid = null;
     }
 }
