@@ -125,16 +125,19 @@ export default class ModelData {
      * Iterate over existing blocks
      * @param {function} callback - callback(id, x, y, z)
      */
-    forEachBlock(callback) {
+    forEachBlock(x, z, width, depth, callback) {
         const pos = new Position(0, 0, 0);
         const height = Math.max(this.highestBlock, this.height);
 
+        width = Math.min(x + width, this.size);
+        depth = Math.min(z + depth, this.size);
+
         let id;
         for (pos.y = 0 ; pos.y < height ; pos.y++) {
-            for (pos.z = 0 ; pos.z < this.size ; pos.z++) { 
-                for (pos.x = 0 ; pos.x < this.size ; pos.x++) {
+            for (pos.z = z ; pos.z < depth ; pos.z++) { 
+                for (pos.x = x ; pos.x < width ; pos.x++) {
                     id = this.get(pos);
-                    if (!id)
+                    if (id < 1)
                         continue;
                     callback(this.get(pos), pos.x, pos.y, pos.z);
                 }
@@ -151,7 +154,7 @@ export default class ModelData {
         const destPos = new Position();
         const center = model.center;
 
-        model.forEachBlock((id, x, y, z) => {
+        model.forEachBlock(0, 0, model.getSize(), model.getSize(), (id, x, y, z) => {
             destPos.set(pos.x + x - center.x, pos.y + y - center.y, pos.z + z - center.z);
             this.set(id, destPos);
         });

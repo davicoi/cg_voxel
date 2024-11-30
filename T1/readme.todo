@@ -1,12 +1,10 @@
 
 Engine:
   ☐ lower plane (invisible)
-  ☐ generate map (5)
-  ☐ random trees (3)
-  ☐ use initDefaultBasicLight(scene) (1)
   ☐ fix workgrid -> remove and create a central block
   ☐ change the color of the block that the mouse is pointing to
   ☐ fix orbit with pointerlock camera
+  ☐ limit the area of ​​the map that is visible (chunk)
 
   ☐ menu
   ☐ raycaster
@@ -19,9 +17,11 @@ Optimize Blocks:
   ☐ 2 -> change BoxGeometry so that you can define which faces will be created (extension of 1)
   ☐ 3 -> create a single block for sequential blocks (I haven't checked how it behaves with texture yet)
 
-Builder:
-
 Archive:
+  ✔ create chunk class @done(24-11-29 21:29) @project(Engine)
+  ✔ generate map (5) @done(24-11-29 20:00) @project(Engine)
+  ✔ random trees (3) @done(24-11-29 20:00) @project(Engine)
+  ✔ use initDefaultBasicLight(scene) (1) @done(24-11-29 20:00) @project(Engine)
   ✔ fix camera @done(24-11-28 23:29)
   ✔ orbit camera (1) @done(24-11-28 23:29) @project(Engine)
   ✔ first person camera (3) @done(24-11-28 23:29) @project(Engine)

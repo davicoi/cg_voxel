@@ -1,5 +1,4 @@
 import * as THREE from    '../../build/three.module.js';
-import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import {initRenderer,
         initCamera,
         initDefaultBasicLight,
@@ -48,10 +47,11 @@ export default class Core {
 
     constructor(size, x, y,z) {
         if (Core.instance)
-            throw new ReferenceError("ERROR: Only 1 instance of Blocks() is allowed.");
+            throw new ReferenceError("ERROR: Only 1 instance of Core() is allowed.");
         Core.instance = this;
 
         this.clock = new THREE.Clock(true);
+        this.blocks = Blocks.getInstance();
 
         this.initThreeJS();
         this.initCamera(x, y, z);
@@ -82,7 +82,7 @@ export default class Core {
     initWorkspace(size) {
         const workGrid = new WorkGrid(this.scene, false);
 
-        this.blockRender = new BlockRenderer(this.scene);
+        this.blockRender = new BlockRenderer();
         this.blockModels = new BlockModels();
     
         this.workspace = new Workspace({
@@ -92,5 +92,7 @@ export default class Core {
         }, null, size);
 
         this.mapData = this.workspace.getModelData();
+
+        this.blockRender.init();
     }
 }

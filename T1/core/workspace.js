@@ -88,7 +88,6 @@ export default class Workspace {
      */
     setBlockRender(blockRender) {
         this.blockRender = blockRender;
-        blockRender.setWorkspace(this);
     }
 
 
@@ -145,7 +144,7 @@ export default class Workspace {
         pos.add(model.center.x, model.center.y, model.center.z);
 
 
-        model.forEachBlock((id, x, y, z) => {
+        model.forEachBlock(0, 0, model.getSize(), model.getSize(), (id, x, y, z) => {
             p.set(pos.x + x, pos.y + y, pos.z + z);
             this.set(id, p);
         });

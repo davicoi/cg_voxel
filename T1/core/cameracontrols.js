@@ -22,7 +22,7 @@ export default class CameraControls {
     jumpActive = false;
     speed = 5;
 
-    gravityActive = false;
+    gravityActive = true;
     gravitySpeed = 5;
     gravityCurrentSpeed = 0;
     gravity = 10;
@@ -67,7 +67,7 @@ export default class CameraControls {
         const centerPos = parseInt(size / 2) * Conf.CUBE_SIZE;
         this.setTarget(centerPos, 0, centerPos);
 
-        this.orbit.enable = !this.active
+        this.orbit.enable = this.active == null;
         if (!this.active) {
             this.active = this.orbit;
             if (typeof x !== 'undefined')
@@ -230,7 +230,7 @@ export default class CameraControls {
             core.camControl.update();
     
         } else {
-            core.camControl.setPosition(centerX, centerY + 2, centerZ);
+            core.camControl.setPosition(centerX, centerY + Conf.CUBE_SIZE * 2, centerZ);
         }
     }
 
@@ -250,6 +250,9 @@ export default class CameraControls {
     }
 
     updateGravity(delta) {
+        if (!this.gravityActive || !this.isPointerLock())
+            return;
+
         const camAddY = Conf.CUBE_SIZE / 3 * 2;
 
         const pos = this.camToPosition();

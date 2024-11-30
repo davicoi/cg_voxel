@@ -21,7 +21,6 @@ core.camControl.initPointerLock(centerPos, 8, centerPos);
 core.camControl.initOrbit(centerPos, 25, 35 + centerPos);
 
 
-
 // three js
 const camera = core.camera;
 
@@ -71,12 +70,13 @@ KeyControl.init(workspace, navigate, mouseMove, null);
 
 window.addEventListener('click', (event) => {
     const pos = mouseMove.getAddPos();
-    if (core.camControl.pointerLock.isLocked && pos) {
+    if ((!core.camControl.isPointerLock() || core.camControl.pointerLock.isLocked) && pos) {
         workspace.set(workspace.selectedBlock, pos);
         mouseMove.clearPos();
     }
 
-    core.camControl.pointerLock.lock();
+    if (core.camControl.isPointerLock())
+        core.camControl.pointerLock.lock();
 }, false);
 
 
