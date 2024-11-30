@@ -1,6 +1,5 @@
 import * as THREE from    '../../build/three.module.js';
 import {initRenderer,
-        initCamera,
         initDefaultBasicLight,
         onWindowResize } from "../../libs/util/util.js";
 
@@ -9,9 +8,10 @@ import BlockRenderer from "./blockrenderer.js";
 import Blocks from "./blocks.js";
 import ModelData from "./modeldata.js";
 import Workspace from "./workspace.js";
-import WorkGrid from '../builder/workgrid.js';
 import CameraControls from './cameracontrols.js';
 import KeyboardState from '../../libs/util/KeyboardState.js';
+import WorkGrid from '../builder/workgrid.js';
+import WorkPlane from './workplane.js';
 
 
 
@@ -45,7 +45,7 @@ export default class Core {
     workGrid;
 
 
-    constructor(size, x, y,z) {
+    constructor(size, x, y, z, planeOrGrid = true) {
         if (Core.instance)
             throw new ReferenceError("ERROR: Only 1 instance of Core() is allowed.");
         Core.instance = this;
@@ -55,7 +55,7 @@ export default class Core {
 
         this.initThreeJS();
         this.initCamera(x, y, z);
-        this.initWorkspace(size);
+        this.initWorkspace(size, planeOrGrid);
     }
 
     setModel(model) {
@@ -79,8 +79,8 @@ export default class Core {
     }
 
 
-    initWorkspace(size) {
-        const workGrid = new WorkGrid(this.scene, false);
+    initWorkspace(size, planeOrGrid) {
+        const workGrid = planeOrGrid ? new WorkPlane(this.scene, false) : new WorkGrid(this.scene, false);
 
         this.blockRender = new BlockRenderer();
         this.blockModels = new BlockModels();

@@ -1,7 +1,6 @@
 import { InfoBox } from "../libs/util/util.js";
 
 import NavigateBlock from './builder/navigateblock.js';
-import WorkGrid from './builder/workgrid.js';
 import BuilderMouseMove from './builder/buildermousemove.js';
 import BuilderMenu from './builder/buildermenu.js';
 import KeyControl from './builder/keycontrol.js'
@@ -11,7 +10,7 @@ import Conf from "./core/conf.js";
 /**
  * init ThreeJS
  */
-const core = new Core(Conf.DEFAULT_BUILDER_SIZE, 0, 25, 20);
+const core = new Core(Conf.DEFAULT_BUILDER_SIZE, 0, 25, 20, false);
 core.blockRender.optimize(false);
 
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;

@@ -8,7 +8,7 @@ import { binaryIndexOf } from '../other/binarysearch.js';
 
 export default class BlockRenderer {
     optimizeBlocks = true;
-    chunkActive = true;
+    chunkActive = false;
     chunkCount = 2;
 
     /** @type {Core} */
@@ -169,7 +169,7 @@ export default class BlockRenderer {
         if (!this.chunkActive)
             return false;
 
-        const pos = this.core.camControl.camToPosition();
+        const pos = this.core.camControl.getCam2PlanePosition();
         return (pos.x < this.recalcRect.minX || pos.x >= this.recalcRect.maxX ||
                 pos.z < this.recalcRect.minZ || pos.z >= this.recalcRect.maxZ);
     }
@@ -182,8 +182,8 @@ export default class BlockRenderer {
     updateChunk(force = false) {
         if (!force && !this.chunkPendingUpdate())
             return;
-            
-        const pos = this.core.camControl.camToPosition();
+        
+        const pos = this.core.camControl.getCam2PlanePosition();
         const grids = this.generateChunkCoordinates(pos.x, pos.z, this.chunkCount);
         this.recalcRect = grids.recalcRect;
 

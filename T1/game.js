@@ -1,7 +1,6 @@
 import * as THREE from    '../../build/three.module.js';
 import Core from './core/core.js';
 import MouseMove from './core/mousemove.js';
-import WorkGrid from './builder/workgrid.js';
 import KeyControl from './builder/keycontrol.js'
 import PreviewBlock from './core/previewblock.js';
 import MapGenerator from './core/mapgenerator.js';
@@ -14,7 +13,7 @@ import Conf from './core/conf.js';
 /**
  * init Builder
  */
-const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35);
+const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, true);
 
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
 core.camControl.initPointerLock(centerPos, 8, centerPos);
@@ -130,6 +129,8 @@ async function main() {
     let seed = Math.random() * 65535 | 0;
     //MapGenerator.create(workspace.getModelData(), 4, 10, seed);
     MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
+
+    core.blockRender.enableChunk(true);
     workspace.redraw();
 
     core.camControl.centerCamera();

@@ -214,7 +214,7 @@ export default class CameraControls {
             this.orbit.enable = true;
             this.active = this.orbit;
             this.restorePosition();
-            this.core.blockRender.enableChunk(false);
+            //this.core.blockRender.enableChunk(false);
         }
     }
 
@@ -226,7 +226,7 @@ export default class CameraControls {
             this.active = this.pointerLock;
             this.restorePosition();
             this.pointerLock.lock();
-            this.core.blockRender.enableChunk(true);
+            //this.core.blockRender.enableChunk(true);
         }
     }
 
@@ -314,6 +314,24 @@ export default class CameraControls {
         );
         return pos;
     }
+
+    getCam2PlanePosition() {
+        return this.isOrbit() ? this.getPosFromOrbit() : this.camToPosition();
+    }
+
+    getPosFromOrbit() {
+        if (!this.raycaster)
+            this.raycaster = new THREE.Raycaster();
+
+        this.raycaster.setFromCamera({x: 0, y: 0}, this.core.camControl.camera);
+        let list = this.raycaster.intersectObject(this.core.workspace.workGrid.grid);
+        if (list[0]) {
+            return new Position(list[0].point.x | 0, 0, list[0].point.z | 0);
+        } else {
+            return null;
+        }
+    }
+
 
     canMove(pos) {
         return (this.core.mapData.get(pos) == 0)
