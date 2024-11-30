@@ -137,6 +137,31 @@ export default class CameraControls {
             this.active.update();
     }
 
+    // updateOrbit() {
+    //     if (!this.isOrbit())
+    //         return;
+    //     let upd = false;
+    //     if (this.camera.position.x < 0) {
+    //         this.camera.position.x = 0;
+    //         upd = true;
+    //     }
+    //     if (this.camera.position.z < 0) {
+    //         this.camera.position.z = 0;
+    //         upd = true;
+    //     }
+    //     if (this.camera.position.x > this.core.mapData.getSize() * Conf.CUBE_SIZE) {
+    //         this.camera.position.x = this.core.mapData.getSize() * Conf.CUBE_SIZE;
+    //         upd = true;
+    //     }
+    //     if (this.camera.position.z > this.core.mapData.getSize() * Conf.CUBE_SIZE) {
+    //         this.camera.position.z = this.core.mapData.getSize() * Conf.CUBE_SIZE;
+    //         upd = true;
+    //     }
+    //     if (upd)
+    //         this.orbit.update();
+
+    // }
+
     updatePointerLock(delta) {
         if (!this.isPointerLock())
             return;
@@ -174,6 +199,7 @@ export default class CameraControls {
     updateControl(delta) {
         this.updatePointerLock(delta);
         this.updateGravity(delta);
+        // this.updateOrbit();
     }
 
     setPosition(x, y, z) {
@@ -188,6 +214,7 @@ export default class CameraControls {
             this.orbit.enable = true;
             this.active = this.orbit;
             this.restorePosition();
+            this.core.blockRender.enableChunk(false);
         }
     }
 
@@ -199,6 +226,7 @@ export default class CameraControls {
             this.active = this.pointerLock;
             this.restorePosition();
             this.pointerLock.lock();
+            this.core.blockRender.enableChunk(true);
         }
     }
 

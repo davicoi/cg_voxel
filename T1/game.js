@@ -117,6 +117,8 @@ function render()
 
     core.camControl.updateControl(delta);
 
+    core.blockRender.update(delta);
+
     core.renderer.render(core.scene, camera);
 }
 

@@ -3,16 +3,20 @@ import Position from './position.js';
 import Core from './core.js';
 import Chunk from './chunk.js';
 import Conf from './conf.js';
+import { binaryIndexOf } from '../other/binarysearch.js';
 
 
 export default class BlockRenderer {
     optimizeBlocks = true;
+    chunkActive = true;
+    chunkCount = 2;
 
     /** @type {Core} */
     core;
 
     /** @type {[Chunk]} */
     chunkList = [];
+    recalcRect = {minX: -1, minZ: -1, maxX: -1, maxZ: -1};
 
 
 
@@ -78,7 +82,6 @@ export default class BlockRenderer {
             chunk.set(id, pos);
     }
     get(pos) {
-        console.log ('blex');
         return this.core.model.get(pos);
     }
 
@@ -102,4 +105,118 @@ export default class BlockRenderer {
             chunk.redraw();
         });
     }
-}
+
+    adjustChunkRect(x, z, gridSize, mapSize) {
+        if (!this.chunkActive) {
+            return { x: 0, z: 0, maxX: mapSize, maxZ: mapSize };
+        }
+
+        const chunkSize = Conf.CHUNK_SIZE;
+        mapSize = Math.ceil(mapSize / chunkSize) * chunkSize;
+        x = parseInt(x / chunkSize) * chunkSize - chunkSize;
+        z = parseInt(z / chunkSize) * chunkSize - chunkSize;
+    
+        if (gridSize > mapSize)
+            return { x: 0, y: 0, maxX: gridSize, maxY: gridSize };
+    
+        if (x + gridSize > mapSize)
+            x = mapSize - gridSize;
+        if (x < 0)
+            x = 0;
+        
+        if (z + gridSize > mapSize)
+            z = mapSize - gridSize;
+        if (z < 0)
+            z = 0;
+    
+        return { x, z, maxX: x + gridSize, maxZ: z + gridSize }
+    }
+    generateChunkCoordinates(x, z, gridCount) {
+        const size = Core.getInstance().mapData.getSize();
+        const gridSize = (1 + gridCount * 2) * Conf.CHUNK_SIZE;
+
+        const rect = this.adjustChunkRect(x, z, gridSize, size);
+
+        const centerX = (rect.x + rect.maxX) / 2;
+        const centerZ = (rect.z + rect.maxZ) / 2;
+
+        // area that the user can move without having to recalculate the chunks
+        const recalcRect = {
+            minX: centerX - Conf.CHUNK_SIZE * 0.75,
+            minZ: centerZ - Conf.CHUNK_SIZE * 0.75, 
+            maxX: centerX + Conf.CHUNK_SIZE * 0.75,
+            maxZ: centerZ + Conf.CHUNK_SIZE * 0.75
+        }
+
+        // coordinates of all visible chunks
+        const list = [];
+        let i, ref;
+        for (let j = rect.z ; j < rect.maxZ ; j += Conf.CHUNK_SIZE) {
+            for (i = rect.x ; i < rect.maxX ; i += Conf.CHUNK_SIZE) {
+                ref = Chunk.refFrom(i, j);
+                list.push({x: i, z: j, ref});
+            }
+        }
+    
+        return {
+            recalcRect,
+            rect,
+            list
+        }
+    }
+
+    chunkPendingUpdate() {
+        if (!this.chunkActive)
+            return false;
+
+        const pos = this.core.camControl.camToPosition();
+        return (pos.x < this.recalcRect.minX || pos.x >= this.recalcRect.maxX ||
+                pos.z < this.recalcRect.minZ || pos.z >= this.recalcRect.maxZ);
+    }
+
+    update(delta) {
+        if (this.chunkActive)
+            this.updateChunk();
+    }
+
+    updateChunk(force = false) {
+        if (!force && !this.chunkPendingUpdate())
+            return;
+            
+        const pos = this.core.camControl.camToPosition();
+        const grids = this.generateChunkCoordinates(pos.x, pos.z, this.chunkCount);
+        this.recalcRect = grids.recalcRect;
+
+        // remove chunks
+        for (let i = 0 ; i < this.chunkList.length ; i++) {
+            if (binaryIndexOf(grids.list, this.chunkList[i].ref, (val, b) => val - b.ref) >= 0)
+                continue;
+
+            this.chunkList[i].clear();
+            this.chunkList[i] = null;
+        }
+        this.chunkList = this.chunkList.filter(chunk => chunk !== null);
+
+        // add chunks
+        let chunk;
+        for (let i = 0 ; i < grids.list.length ; i++) {
+            if (binaryIndexOf(this.chunkList, grids.list[i].ref, (val, b) => val - b.ref) >= 0)
+                continue;
+
+            chunk = new Chunk(grids.list[i].x, grids.list[i].z)
+            chunk.redraw();
+            this.chunkList.push(chunk);
+        }
+        this.chunkList.sort((a, b) => a.ref - b.ref);
+    }
+
+    enableChunk(enable) {
+        enable = enable == true;
+
+        if (this.chunkActive != enable) {
+            this.chunkActive = enable;
+            this.updateChunk(true);
+            this.redraw();
+        }
+    }
+};
