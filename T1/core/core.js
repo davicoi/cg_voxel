@@ -62,7 +62,7 @@ export default class Core {
     }
 
     setModel(model) {
-        this.model = model;
+        this.mapData = model;
     }
 
 

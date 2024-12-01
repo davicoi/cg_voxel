@@ -31,13 +31,7 @@ export default class BlockRenderer {
 
     init() {
         const count = Math.ceil(this.core.mapData.getSize() / Conf.CHUNK_SIZE);
-        
-        
-        for (let z = 0 ; z < count ; z++) {
-            for (let x = 0 ; x < count ; x++) {
-                this.chunkList.push(new Chunk(x * Conf.CHUNK_SIZE, z * Conf.CHUNK_SIZE));
-            }
-        }
+        this.clear();
     }
 
     optimize(enable) {
@@ -45,9 +39,24 @@ export default class BlockRenderer {
     }
 
     clear() {
+        if (!this.core.mapData)
+            return;
+
         this.chunkList.forEach(chunk => {
             chunk.clear();
         });
+        this.chunkList = [];
+        
+        if (!this.chunkActive) {
+            const size = this.core.mapData.getSize();
+            for (let z = 0 ; z < size ; z += Conf.CHUNK_SIZE) {
+                for (let x = 0 ; x < size ; x += Conf.CHUNK_SIZE) {
+                    this.chunkList.push(new Chunk(x, z));
+                }
+            }
+        } else {
+            this.updateChunk(true);
+        }
     }
 
     /** Returns a list of all blocks */
@@ -82,7 +91,7 @@ export default class BlockRenderer {
             chunk.set(id, pos);
     }
     get(pos) {
-        return this.core.model.get(pos);
+        return this.core.mapData.get(pos);
     }
 
     setNeighborsVisibility(pos) {
@@ -95,12 +104,14 @@ export default class BlockRenderer {
             p.y = pos.y + y;
             p.z = pos.z + z;
             chunk = this.chunkOf(p);
-            chunk.setVisibility(p, this.core.model.countNeighbors(p) < 6);
+            if (chunk)
+                chunk.setVisibility(p, this.core.mapData.countNeighbors(p) < 6);
         })
     }
 
     /** recreate all blocks */
     redraw() {
+        this.clear();
         this.chunkList.forEach(chunk => {
             chunk.redraw();
         });

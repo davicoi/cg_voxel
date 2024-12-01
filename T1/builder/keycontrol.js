@@ -1,4 +1,3 @@
-import Workspace from '../core/workspace.js';
 import KeyboardState from '../../libs/util/KeyboardState.js';
 import BuilderMouseMove from './buildermousemove.js';
 import NavigateBlock from './navigateblock.js';
@@ -8,8 +7,6 @@ import Core from '../core/core.js';
 let keyboard;
 /** @type {NavigateBlock} */
 let navigate;
-/** @type {Workspace} */
-let workspace;
 /** @type {BuilderMouseMove} */
 let mouseMove;
 /** @type {Core} */
@@ -21,16 +18,14 @@ let funcToggle;
 
 /**
  * 
- * @param {Workspace} _workspace 
  * @param {NavigateBlock} _navigate 
  * @param {BuilderMouseMove} _mouseMove 
  */
-export function init(_workspace, _navigate, _mouseMove, callbackToggleBox) {
+export function init(_navigate, _mouseMove, callbackToggleBox) {
     core = Core.getInstance();
     //keyboard = new KeyboardState();
     keyboard = core.keyboard;
     navigate = _navigate;
-    workspace = _workspace;
     mouseMove = _mouseMove;
     funcToggle = callbackToggleBox;
 }
@@ -53,17 +48,18 @@ export function keyboardUpdate() {
     if ( keyboard.down(".") )           core.tool.inc();
 
     if ( keyboard.down("Q") )           core.workspace.set(core.tool.getActive(), navigate.getPos());
-    if ( keyboard.down("E") )           workspace.set(0, navigate.getPos());
+    if ( keyboard.down("E") )           core.workspace.set(0, navigate.getPos());
 
     if ( keyboard.down("space") ) {
         const pos = navigate.getPos();
-        workspace.set(core.tool.getActive(), pos);
+        core.workspace.set(core.tool.getActive(), pos);
     }
 
     if ( keyboard.down("delete") ) {
         const pos = mouseMove.getLastBlockPos();
+        console.log (pos);
         if (pos)
-            workspace.set(0, pos);
+            core.workspace.set(0, pos);
     }
 
     if (funcToggle && keyboard.down("T"))

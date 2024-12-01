@@ -7,8 +7,6 @@ export default class Chunk {
     ref;
     startX;
     startZ;
-    // endX;
-    // endZ;
 
     /** @type {Core} */
     core;
@@ -50,7 +48,7 @@ export default class Chunk {
      * @param {Position} pos 
      */
     set(id, pos) {
-        if (!this.core.model.set(id, pos))
+        if (!this.core.mapData.set(id, pos))
             return;
 
         const ref = pos.getRef();
@@ -71,24 +69,12 @@ export default class Chunk {
             if (this.blockMap[ref])
                 this.removeBlock(ref);
         } else if (!this.blockMap[ref]) {
-            this.createBlock(ref, this.core.model.get(pos), pos);
+            this.createBlock(ref, this.core.mapData.get(pos), pos);
         }
     }
 
-    setNeighborsVisibility(pos) {
-/*        const p = pos.clone();
-        const addPos = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
-
-        addPos.forEach(([x, y, z]) => {
-            p.x = pos.x + x;
-            p.y = pos.y + y;
-            p.z = pos.z + z;
-            this.setVisibility(p, this.core.model.countNeighbors(p) < 6);
-        })*/
-    }
-
     get(pos) {
-        return this.core.model.get(pos);
+        return this.core.mapData.get(pos);
     }
 
     /** Remove/destroy a block */
@@ -140,7 +126,7 @@ export default class Chunk {
             pos.z = z;
 
             // don't add non-visible blocks
-            if (this.core.blockRender.optimizeBlocks && this.core.model.countNeighbors(pos) == 6)
+            if (this.core.blockRender.optimizeBlocks && this.core.mapData.countNeighbors(pos) == 6)
                 return;
 
             ref = pos.getRef();
