@@ -88,10 +88,15 @@ window.addEventListener('click', (event) => {
 render();
 function render()
 {
+    const delta = core.clock.getDelta();
     requestAnimationFrame(render);
 
     KeyControl.keyboardUpdate();
     mouseMove.update(workspace);
+
+    core.camControl.updateKeys(core.keyboard, delta);
+    core.camControl.update(delta);
+    core.blockRender.update(delta);
 
     core.renderer.render(core.scene, core.camera);
 }

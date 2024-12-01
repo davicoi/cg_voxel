@@ -57,7 +57,6 @@ export function keyboardUpdate() {
 
     if ( keyboard.down("delete") ) {
         const pos = mouseMove.getLastBlockPos();
-        console.log (pos);
         if (pos)
             core.workspace.set(0, pos);
     }

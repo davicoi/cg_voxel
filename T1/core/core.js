@@ -44,6 +44,7 @@ export default class Core {
 
     camera = null;
     scene;
+    renderer;
 
     workGrid;
 
@@ -66,6 +67,9 @@ export default class Core {
     }
 
 
+    /**
+     * @returns {Core}
+     */
     static getInstance() {
         return Core.instance;
     }

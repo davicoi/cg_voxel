@@ -180,7 +180,7 @@ export default class BlockRenderer {
         if (!this.chunkActive)
             return false;
 
-        const pos = this.core.camControl.getCam2PlanePosition();
+        const pos = this.core.camControl.getPlanePosition();
             
         return (pos && (pos.x < this.recalcRect.minX || pos.x >= this.recalcRect.maxX ||
                 pos.z < this.recalcRect.minZ || pos.z >= this.recalcRect.maxZ));
@@ -195,7 +195,7 @@ export default class BlockRenderer {
         if (!force && !this.chunkPendingUpdate())
             return;
         
-        const pos = this.core.camControl.getCam2PlanePosition();
+        const pos = this.core.camControl.getPlanePosition();
         const grids = this.generateChunkCoordinates(pos.x, pos.z, this.chunkCount);
         this.recalcRect = grids.recalcRect;
 

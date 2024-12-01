@@ -17,7 +17,7 @@ import Tool from './core/tool.js';
 const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, true);
 
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
-core.camControl.initPointerLock(centerPos, 8, centerPos);
+core.camControl.initFirstPerson(centerPos, 8, centerPos);
 core.camControl.initOrbit(centerPos, 25, 35 + centerPos);
 
 
@@ -69,14 +69,16 @@ mouseMove.register();
 KeyControl.init(navigate, mouseMove, null);
 
 window.addEventListener('click', (event) => {
+    if (core.camControl.isFirstPerson() && !core.camControl.isLocked()) {
+        core.camControl.lock();
+        return;
+    }
+
     const pos = mouseMove.getAddPos();
-    if ((!core.camControl.isPointerLock() || core.camControl.pointerLock.isLocked) && pos) {
+    if ((!core.camControl.isFirstPerson() || core.camControl.isLocked()) && pos) {
         workspace.set(Tool.getInstance().getActive(), pos);
         mouseMove.clearPos();
     }
-
-    if (core.camControl.isPointerLock())
-        core.camControl.pointerLock.lock();
 }, false);
 
 
@@ -112,11 +114,10 @@ function render()
     requestAnimationFrame(render);
 
     KeyControl.keyboardUpdate();
-    core.camControl.updateKeys(core.keyboard);
     mouseMove.update(workspace);
 
-    core.camControl.updateControl(delta);
-
+    core.camControl.updateKeys(core.keyboard, delta);
+    core.camControl.update(delta);
     core.blockRender.update(delta);
 
     core.renderer.render(core.scene, camera);
@@ -134,7 +135,7 @@ async function main() {
     core.blockRender.enableChunk(true);
     workspace.redraw();
 
-    core.camControl.centerCamera();
+    core.camControl.center();
 
     render();
 }

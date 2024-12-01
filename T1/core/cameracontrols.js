@@ -4,23 +4,17 @@ import { PointerLockControls } from '../../build/jsm/controls/PointerLockControl
 import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import Core from './core.js';
 import Conf from './conf.js';
-import Position from './position.js';
+
+import OrbitCtl from './orbit.js';
+import FirstPersonCtl from './firstperson.js';
 
 export default class CameraControls {
-    active = null;
-    orbitPosition;
-    orbitLookAt = new THREE.Vector3();
-    pointerLockPosition;
-    pointerLookAt = new THREE.Vector3();
-
-    moveForward = false;
-    moveBackward = false;
-    moveLeft = false;
-    moveRight = false;
-    rotateLeft = false;
-    rotateRight = false;
+    /** @type {OrbitCtl|FirstPersonCtl} */
+    active;
+    orbit;
+    firstPerson;
+    
     speed = 5;
-
     gravityActive = true;
     gravitySpeed = 7.5;
     gravityCurrentSpeed = 0;
@@ -37,11 +31,9 @@ export default class CameraControls {
     /** @type {Core} */
     core;
 
-    raycaster = new THREE.Raycaster();
     
 
     constructor(renderer) {
-        this.renderer = renderer;
         this.core = Core.getInstance();
     }
 
@@ -51,210 +43,88 @@ export default class CameraControls {
     }
 
     initOrbit(x, y, z) {
-        this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
-        this.orbitPosition = typeof x !== 'undefined' ? new THREE.Vector3(x, y ,z) : this.camera.position.clone();
-        
-        // change Orbit mouse control, LEFT click is used to add blocks
-        this.orbit.mouseButtons = {
-            LEFT: '',
-            MIDDLE: THREE.MOUSE.PAN,
-            RIGHT: THREE.MOUSE.ROTATE
-        };
-
-        // target = center of map
-        const size = this.core.mapData.getSize();
-        const centerPos = parseInt(size / 2) * Conf.CUBE_SIZE;
-        this.setTarget(centerPos, 0, centerPos);
-
-        this.orbit.enable = this.active == null;
+        this.orbit = new OrbitCtl(x, y, z);
         if (!this.active) {
             this.active = this.orbit;
-            if (typeof x !== 'undefined')
-                this.camera.position.set(x, y, z);
+            this.orbit.enable(true);
         }
-        this.update();
-        return this.orbit;
     }
 
-    initPointerLock(x, y, z) {
-        this.pointerLock = new PointerLockControls(this.camera, this.renderer.domElement);
-        this.pointerLockPosition = typeof x !== 'undefined' ? new THREE.Vector3(x, y,z) : this.camera.position.clone();
-        //this.core.scene.add(this.pointerLock.getObject());
-        
+    initFirstPerson(x, y, z) {
+        this.firstPerson = new FirstPersonCtl(x, y, z);
         if (!this.active) {
-            this.active = this.pointerLock;
-            this.restorePosition();
+            this.active = this.firstPerson;
+            this.firstPerson.enable(true);
         }
     }
 
-    updateKeys(keyboard) {
-        if (this.isPointerLock()) {
-            const keyList = [['A', 'moveLeft'], ['D', 'moveRight'], ['W', 'moveForward'], ['S', 'moveBackward']];
-            keyList.forEach(([key, varName]) => {
-                if (keyboard.down(key))
-                    this[varName] = true;
-                else if (keyboard.up(key))
-                    this[varName] = false;
-            });
-        }
-    }
-
-    savePosition() {
-        if (!this.active)
-            return;
-
-        if (this.active == this.orbit) {
-            this.orbitPosition = this.camera.position.clone();
-            this.camera.getWorldDirection(this.orbitLookAt);
-        } else if (this.active == this.pointerLock) {
-            this.pointerLockPosition = this.camera.position.clone();
-            this.camera.getWorldDirection(this.pointerLookAt);
-        }
+    save() {
+        this.active.save();
     }
 
     restorePosition() {
-        if (!this.active)
-            return;
-        
-        if (this.active == this.orbit) {
-            this.camera.position.copy(this.orbitPosition);
-            this.camera.lookAt(this.orbitLookAt);
-            this.orbit.update();
-        } else if (this.active == this.pointerLock) {
-            this.camera.position.copy(this.pointerLockPosition);
-            this.camera.lookAt(this.pointerLookAt);
-        }
+        this.active.restore();
     }
 
     setTarget(x, y, z) {
-        if (this.orbit)
-            this.orbit.target.set(x, y, z);
-    }
-
-    update() {
         if (this.active && this.active == this.orbit)
-            this.active.update();
+            this.orbit.setTarget(x, y, z);
     }
 
-    // updateOrbit() {
-    //     if (!this.isOrbit())
-    //         return;
-    //     let upd = false;
-    //     if (this.camera.position.x < 0) {
-    //         this.camera.position.x = 0;
-    //         upd = true;
-    //     }
-    //     if (this.camera.position.z < 0) {
-    //         this.camera.position.z = 0;
-    //         upd = true;
-    //     }
-    //     if (this.camera.position.x > this.core.mapData.getSize() * Conf.CUBE_SIZE) {
-    //         this.camera.position.x = this.core.mapData.getSize() * Conf.CUBE_SIZE;
-    //         upd = true;
-    //     }
-    //     if (this.camera.position.z > this.core.mapData.getSize() * Conf.CUBE_SIZE) {
-    //         this.camera.position.z = this.core.mapData.getSize() * Conf.CUBE_SIZE;
-    //         upd = true;
-    //     }
-    //     if (upd)
-    //         this.orbit.update();
-
-    // }
-
-    updatePointerLock(delta) {
-        if (!this.isPointerLock())
+    update(delta) {
+        if (!this.active)
             return;
 
-        if (!this.oldPos) {
-            this.oldPos = this.camera.position.clone();
-            this.oldY = this.core.mapData.firstEmptyFrom(Math.round(this.camera.position.x / Conf.CUBE_SIZE), Math.round(this.camera.position.z / Conf.CUBE_SIZE));
-        }
-
-        if (this.moveForward)
-            this.pointerLock.moveForward(this.speed * delta);
-        else if (this.moveBackward)
-            this.pointerLock.moveForward(this.speed * -1 * delta);
-    
-        if (this.moveRight)
-            this.pointerLock.moveRight(this.speed * delta);
-        else if (this.moveLeft)
-            this.pointerLock.moveRight(this.speed * -1 * delta);
-
-        // movement in XZ
-        const pos = this.camToPosition();
-        if (!this.canMove(pos)) {
-            //this.camera.position.copy(this.oldPos);
-            this.camera.position.x = this.oldPos.x;
-            this.camera.position.z= this.oldPos.z;
-        } else {
-            this.oldPos.copy(this.camera.position);
-        }
+        this.updateGravity(delta);
+        this.active.update(delta, this.speed);
     }
 
-    updateControl(delta) {
-        this.updatePointerLock(delta);
-        this.updateGravity(delta);
-        // this.updateOrbit();
+    updateKeys(keyboard, delta) {
+        this.active.updateKeys(keyboard, delta);
     }
 
     setPosition(x, y, z) {
-        this.camera.position.set(x, y, z);
+        this.active.setPosition(x, y, z);
+    }
+
+    isOrbit() {
+        return (this.active && this.active == this.orbit);
+    }
+
+    isFirstPerson() {
+        return (this.active && this.active == this.firstPerson);
     }
 
     useOrbit() {
-        if (this.orbit && this.pointerLock && this.active != this.orbit) {
-            this.savePosition();
-            this.pointerLock.unlock();
-            this.pointerLock.enable = false;
-            this.orbit.enable = true;
+        if (this.orbit && this.firstPerson && this.active != this.orbit) {
+            if (this.isLocked())
+                this.unlock();
+
+            this.active.enable(false);
             this.active = this.orbit;
-            this.restorePosition();
-            //this.core.blockRender.enableChunk(false);
+            this.orbit.enable(true);
         }
     }
 
-    usePointerLock() {
-        if (this.pointerLock && this.orbit && this.active != this.pointerLock) {
-            this.savePosition();
-            this.orbit.enable = false;
-            this.pointerLock.enable = true;
-            this.active = this.pointerLock;
-            this.restorePosition();
-            this.pointerLock.lock();
-            //this.core.blockRender.enableChunk(true);
+    useFirstPerson() {
+        if (this.orbit && this.firstPerson && this.active != this.firstPerson) {
+            this.active.enable(false);
+            this.active = this.firstPerson;
+            this.firstPerson.enable(true);
         }
     }
 
     toggle() {
-        if (this.active === this.orbit)
-            this.usePointerLock();
-        else
-            this.useOrbit();
-    }
-
-    isOrbit() {
-        return (this.orbit && this.active && this.active == this.orbit);
-    }
-
-    isPointerLock() {
-        return (this.pointerLock && this.active && this.active == this.pointerLock);
-    }
-
-    centerCamera() {
-        const core = Core.getInstance();
-        const size = core.mapData.getSize();
-        const centerX = parseInt(size / 2) * Conf.CUBE_SIZE;
-        const centerZ = parseInt(size / 2) * Conf.CUBE_SIZE;
-        const centerY = core.mapData.firstEmptyFrom(centerX, centerZ) * Conf.CUBE_SIZE;
-    
-        if (core.camControl.isOrbit()) {
-            core.camControl.setTarget(centerX, 0, centerZ);
-            core.camControl.setPosition(centerX, 25, 35 + centerZ);
-            core.camControl.update();
-    
-        } else {
-            core.camControl.setPosition(centerX, centerY + Conf.CUBE_SIZE * 2, centerZ);
+        if (this.orbit && this.firstPerson) {
+            if (this.active === this.orbit)
+                this.useFirstPerson();
+            else
+                this.useOrbit();
         }
+    }
+
+    center() {
+        this.active.center();
     }
 
     enableGravity(enable) {
@@ -273,12 +143,13 @@ export default class CameraControls {
     }
 
     updateGravity(delta) {
-        if (!this.gravityActive || !this.isPointerLock())
+        if (!this.gravityActive || !this.isFirstPerson())
             return;
 
         const camAddY = Conf.CUBE_SIZE / 3 * 2;
 
-        const pos = this.camToPosition();
+        //const pos = this.camToPosition();
+        const pos = this.active.getPosition();
         pos.y--;
 
         // minimum height at which the player can stand
@@ -300,34 +171,21 @@ export default class CameraControls {
         this.camera.position.y = y;
     }
 
-    camToPosition() {
-        const camAddY = Conf.CUBE_SIZE / 3 * 2;
-        const pos = new Position(
-            this.camera.position.x / Conf.CUBE_SIZE + 0.01,
-            (this.camera.position.y - camAddY) / Conf.CUBE_SIZE + 0.01,
-            this.camera.position.z / Conf.CUBE_SIZE + 0.01,
-        );
-        return pos;
+    getPlanePosition() {
+        return this.active.getPlanePosition();
     }
 
-    getCam2PlanePosition() {
-        return this.isOrbit() ? this.getPosFromOrbit() : this.camToPosition();
+    lock() {
+        if (this.isFirstPerson)
+            this.firstPerson.lock();
     }
 
-    getPosFromOrbit() {
-        if (!this.raycaster)
-            this.raycaster = new THREE.Raycaster();
-
-        this.raycaster.setFromCamera({x: 0, y: 0}, this.core.camControl.camera);
-        let list = this.raycaster.intersectObject(this.core.workspace.workGrid.grid);
-        if (list[0]) {
-            return new Position(list[0].point.x | 0, 0, list[0].point.z | 0);
-        } else {
-            return null;
-        }
+    unlock() {
+        if (this.isFirstPerson)
+            this.firstPerson.unlock();
     }
 
-    canMove(pos) {
-        return (this.core.mapData.get(pos) == 0)
+    isLocked() {
+        return this.isFirstPerson() && this.firstPerson.isLocked() == true;
     }
 }

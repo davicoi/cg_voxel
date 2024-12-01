@@ -4,6 +4,7 @@ import CoordConverter from './coordconverter.js';
 import BlockRenderer from './blockrenderer.js';
 import PreviewBlock from './previewblock.js';
 import Workspace from './workspace.js';
+import Core from './core.js';
 
 export default class MouseMove {
     /** @type {Position} */
@@ -22,6 +23,7 @@ export default class MouseMove {
     navigator;
     /** @type {BlockRenderer} */
     blockRender;
+    core = Core.getInstance();
 
     /**
      * Constructor
@@ -61,7 +63,10 @@ export default class MouseMove {
         if (!this.isEnabled)
             return;
 
-        this.raycaster.setFromCamera(this.mouse, this.camera);
+        if (!this.core.camControl.isLocked())
+            this.raycaster.setFromCamera(this.mouse, this.camera);
+        else
+            this.raycaster.setFromCamera({x: 0, y:0}, this.camera);
 
         const list = [workspace.workGrid.grid, ...this.blockRender.getBlockList()];
         const intersects = this.raycaster.intersectObjects(list);
