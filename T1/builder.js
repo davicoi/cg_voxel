@@ -6,6 +6,7 @@ import BuilderMenu from './builder/buildermenu.js';
 import KeyControl from './builder/keycontrol.js'
 import Core from './core/core.js';
 import Conf from "./core/conf.js";
+import Tool from "./core/tool.js";
 
 /**
  * init ThreeJS
@@ -69,12 +70,12 @@ let infoBox = new InfoBox();
  */
 mouseMove.register();
 
-KeyControl.init(workspace, navigate, mouseMove, () => {});
+KeyControl.init(navigate, mouseMove, () => {});
 
 window.addEventListener('click', (event) => {
     const pos = mouseMove.getAddPos();
     if (pos) {
-        workspace.set(workspace.selectedBlock, pos);
+        workspace.set(Tool.getInstance().getActive(), pos);
         mouseMove.clearPos();
     }
 }, false);

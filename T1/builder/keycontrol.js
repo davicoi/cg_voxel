@@ -2,7 +2,6 @@ import Workspace from '../core/workspace.js';
 import KeyboardState from '../../libs/util/KeyboardState.js';
 import BuilderMouseMove from './buildermousemove.js';
 import NavigateBlock from './navigateblock.js';
-import Blocks from '../core/blocks.js';
 import Core from '../core/core.js';
 
 /** @type {KeyboardState} */
@@ -13,10 +12,11 @@ let navigate;
 let workspace;
 /** @type {BuilderMouseMove} */
 let mouseMove;
+/** @type {Core} */
+let core;
 
 let funcToggle;
 
-const blockList = Blocks.getInstance();
 
 
 /**
@@ -26,7 +26,7 @@ const blockList = Blocks.getInstance();
  * @param {BuilderMouseMove} _mouseMove 
  */
 export function init(_workspace, _navigate, _mouseMove, callbackToggleBox) {
-    const core = Core.getInstance();
+    core = Core.getInstance();
     //keyboard = new KeyboardState();
     keyboard = core.keyboard;
     navigate = _navigate;
@@ -49,23 +49,15 @@ export function keyboardUpdate() {
     if ( keyboard.down("pageup") )      navigate.addPos(0,    1, 0);
     if ( keyboard.down("pagedown") )    navigate.addPos(0, -1, 0);
 
-    if ( keyboard.down(",") ) {
-        workspace.selectedBlock--;
-        if (workspace.selectedBlock < 1)
-            workspace.selectedBlock = 1;
-    }
-    if ( keyboard.down(".") ) {
-        workspace.selectedBlock++;
-        if (workspace.selectedBlock >= blockList.count())
-            workspace.selectedBlock = blockList.count();
-    }
+    if ( keyboard.down(",") )           core.tool.dec();
+    if ( keyboard.down(".") )           core.tool.inc();
 
-    if ( keyboard.down("Q") )           workspace.set(workspace.selectedBlock, navigate.getPos());
+    if ( keyboard.down("Q") )           core.workspace.set(core.tool.getActive(), navigate.getPos());
     if ( keyboard.down("E") )           workspace.set(0, navigate.getPos());
 
     if ( keyboard.down("space") ) {
         const pos = navigate.getPos();
-        workspace.set(workspace.selectedBlock, pos);
+        workspace.set(core.tool.getActive(), pos);
     }
 
     if ( keyboard.down("delete") ) {

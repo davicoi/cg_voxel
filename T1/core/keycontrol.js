@@ -17,6 +17,8 @@ let funcToggle;
 /** @type {Core} */
 let core;
 
+let jumpActive = false;
+
 
 /**
  * 
@@ -52,7 +54,8 @@ export function keyboardUpdate() {
     if ( keyboard.down("Q") )           core.workspace.set(core.tool.getActive(), navigate.getPos());
     if ( keyboard.down("E") )           core.workspace.set(0, navigate.getPos());
 
-    if ( keyboard.down("space") )       core.camControl.jump();
+    if ( keyboard.down("space") )       jumpActive = true;
+    if ( keyboard.up("space") )         jumpActive = false;
 
 
     if ( keyboard.down("delete") ) {
@@ -68,6 +71,9 @@ export function keyboardUpdate() {
         const core = Core.getInstance();
         core.camControl.toggle();
     }
+
+    if (jumpActive)
+        core.camControl.jump();
 }
 
 

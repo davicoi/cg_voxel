@@ -6,6 +6,7 @@ import PreviewBlock from './core/previewblock.js';
 import MapGenerator from './core/mapgenerator.js';
 import FloatingBox from './other/floatingbox.js';
 import Conf from './core/conf.js';
+import Tool from './core/tool.js';
 
 
 
@@ -70,7 +71,7 @@ KeyControl.init(navigate, mouseMove, null);
 window.addEventListener('click', (event) => {
     const pos = mouseMove.getAddPos();
     if ((!core.camControl.isPointerLock() || core.camControl.pointerLock.isLocked) && pos) {
-        workspace.set(workspace.selectedBlock, pos);
+        workspace.set(Tool.getInstance().getActive(), pos);
         mouseMove.clearPos();
     }
 

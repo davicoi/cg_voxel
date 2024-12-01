@@ -22,9 +22,9 @@ export default class CameraControls {
     speed = 5;
 
     gravityActive = true;
-    gravitySpeed = 5;
+    gravitySpeed = 7.5;
     gravityCurrentSpeed = 0;
-    gravity = 10;
+    gravity = 20;
     
     /** @type {THREE.WebGLRenderer} */
     renderer;
@@ -326,7 +326,6 @@ export default class CameraControls {
             return null;
         }
     }
-
 
     canMove(pos) {
         return (this.core.mapData.get(pos) == 0)

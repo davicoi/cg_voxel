@@ -1,7 +1,7 @@
 import Blocks from "./blocks.js";
 
 export default class Tool {
-    selected = 0;
+    selected = 1;
     blocks = Blocks.getInstance();
 
     constructor() {
@@ -10,16 +10,16 @@ export default class Tool {
         Tool.instTool = this;
     }
 
-    getInstance() {
+    static getInstance() {
         return Tool.instTool;
     }
 
     inc() {
-        this.selected = Math.min(this.selected + 1, this.blocks.count() - 1);
+        this.selected = Math.min(this.selected + 1, this.blocks.count());
     }
 
     dec() {
-        this.selected = this.selected <= 1 ? 0 : this.selected - 1;
+        this.selected = this.selected < 2 ? 1 : this.selected - 1;
     }
 
     getActive() {
