@@ -2,6 +2,9 @@ import * as THREE from  'three';
 import Conf from "./conf.js"
 import MaterialList from "./materiallist.js";
 
+import { BoxGeometry } from './boxgeometry.js';
+//const BoxGeometry = THREE.BoxGeometry;
+
 
 // TODO: THREE.BoxBufferGeometry
 // https://medium.com/@pailhead011/instancing-with-three-js-36b4b62bc127
@@ -26,14 +29,21 @@ let blockInst = null;
  */
 export default class Blocks {
     blocksCount = 0;
-    /** @type {THREE.BoxGeometry} */
+    /** @type {BoxGeometry} */
     cube;
+    /** @type {[BoxGeometry]} */
+    cache = [];
 
     constructor() {
         if (blockInst)
             throw new ReferenceError("ERROR: Only 1 instance of Blocks() is allowed. Use Block.getInstance().")
         this.createCube();
         this.createMaterialList();
+
+        const last = BoxGeometry.FRONT | BoxGeometry.BACK | BoxGeometry.LEFT | BoxGeometry.RIGHT | BoxGeometry.TOP | BoxGeometry.BOTTOM;
+        for (let i = 0 ; i <= last ; i++) {
+            this.cache.push(null);
+        }
     }
 
     static EMPTY = 0;
@@ -49,9 +59,19 @@ export default class Blocks {
         return blockInst;
     }
 
-    createCube() {
-        if (!this.cube)
-            this.cube = new THREE.BoxGeometry(Conf.CUBE_SIZE, Conf.CUBE_SIZE, Conf.CUBE_SIZE);
+    createCube(sides = 0x3F) {
+        // 0x20 = F
+        // 0x10 = A
+        // 0x08 = T
+        // 0x04 = B
+        // 0x02 = L
+        // 0x01 = R
+
+        // if (!this.cube)
+        //     this.cube = new BoxGeometry(Conf.CUBE_SIZE, Conf.CUBE_SIZE, Conf.CUBE_SIZE, 0x01);
+
+        if (!this.cache[sides & 0x3F])
+            this.cache[sides & 0x3F] = new BoxGeometry(Conf.CUBE_SIZE, Conf.CUBE_SIZE, Conf.CUBE_SIZE, sides);
     }
 
     /** Create default materials */
@@ -64,18 +84,26 @@ export default class Blocks {
         this.blocksCount = blockList.length - 1;
     }
 
+    getCube(sides) {
+        sides &= 0x3F;
+        if (!this.cache[sides])
+            this.createCube(sides);
+        return this.cache[sides];
+    }
+
     /**
      * Create a block by id
      * @param {number} id block type id
      * @returns {THREE.Mesh}
      */
-    createBlockById(id) {
+    createBlockById(id, sides = 0x3F) {
         if (id < 1 || id >= blockList.length)
             return null;
 
         const materialList = MaterialList.getInstance();
         const material = materialList.get(`b${parseInt(id)}`);
-        const mesh = new THREE.Mesh(this.cube, material);
+        const cube = this.getCube(sides)
+        const mesh = new THREE.Mesh(cube, material);
         return mesh;
     }
 

@@ -1,6 +1,5 @@
 
 Engine:
-  ☐ fix orbit with pointerlock camera
   ☐ fix workgrid -> remove and create a central block
 
   ☐ menu
@@ -11,12 +10,13 @@ Engine:
   ☐ change perlin 2d to 3d @low
 
 Optimize Blocks: 
-  ☐ 2 -> change BoxGeometry so that you can define which faces will be created (extension of 1)
   ☐ 3 -> create a single block for sequential blocks (I haven't checked how it behaves with texture yet)
 
 Archive:
+  ✔ 2 -> change BoxGeometry so that you can define which faces will be created (extension of 1) @done(24-12-01 22:15) @project(Optimize Blocks)
+  ✔ fix orbit with pointerlock camera @done(24-12-01 19:04) @project(Engine)
   ✘ change the color of the block that the mouse is pointing to @cancelled(24-11-30 22:51) @project(Engine)
-  ✔ lower plane (invisible) @done(24-11-30 17:26) @project(Engine)
+  ✘ lower plane (invisible) @done(24-11-30 17:26) @project(Engine)
   ✔ limit the area of ​​the map that is visible (chunk) @done(24-11-30 17:25) @project(Engine)
   ✔ create chunk class @done(24-11-29 21:29) @project(Engine)
   ✔ generate map (5) @done(24-11-29 20:00) @project(Engine)

@@ -172,7 +172,7 @@ export default class CameraControls {
     }
 
     getPlanePosition() {
-        return this.active.getPlanePosition();
+        return this.active ? this.active.getPlanePosition() : null;
     }
 
     lock() {

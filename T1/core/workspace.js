@@ -106,9 +106,6 @@ export default class Workspace {
         this.gridSize = modelData.size;
         this.calcModelInfo();
 
-        console.log ('z', core.mapData);
-
-
         if (newSize && this.workGrid.grid) {
             this.workGrid.setGridSize(this.gridSize);
         }

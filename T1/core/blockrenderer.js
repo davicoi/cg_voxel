@@ -7,7 +7,8 @@ import { binaryIndexOf } from '../other/binarysearch.js';
 
 
 export default class BlockRenderer {
-    optimizeBlocks = true;
+    optimizeBlocks = false;
+    optimizeSides = false;
     chunkActive = false;
     chunkCount = 2;
 
@@ -26,7 +27,7 @@ export default class BlockRenderer {
      */
     constructor(scene) {
         this.core = Core.getInstance();
-        this.optimizeBlocks = true;
+        //this.optimizeBlocks = true;
     }
 
     init() {
@@ -52,8 +53,7 @@ export default class BlockRenderer {
             for (let z = 0 ; z < size ; z += Conf.CHUNK_SIZE) {
                 for (let x = 0 ; x < size ; x += Conf.CHUNK_SIZE) {
                     this.chunkList.push(new Chunk(x, z));
-                }
-            }
+                }            }
         } else {
             this.updateChunk(true);
         }
@@ -106,7 +106,7 @@ export default class BlockRenderer {
             chunk = this.chunkOf(p);
             if (chunk)
                 chunk.setVisibility(p, this.core.mapData.countNeighbors(p) < 6);
-        })
+        });
     }
 
     /** recreate all blocks */
@@ -196,6 +196,8 @@ export default class BlockRenderer {
             return;
         
         const pos = this.core.camControl.getPlanePosition();
+        if (!pos)
+            return;
         const grids = this.generateChunkCoordinates(pos.x, pos.z, this.chunkCount);
         this.recalcRect = grids.recalcRect;
 

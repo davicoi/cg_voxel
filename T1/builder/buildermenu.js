@@ -1,4 +1,5 @@
 import GUI from '../../libs/util/dat.gui.module.js'
+import Core from '../core/core.js';
 import Workspace from '../core/workspace.js';
 import { downloadJsonData } from '../other/download.js';
 import BuilderMouseMove from './buildermousemove.js';
@@ -64,6 +65,7 @@ export default class BuilderMenu {
                     }).then(json => {
                         this.workspace.loadModel(json);
                         this.modelConf.nameCtl.setValue(fname);
+                        Core.getInstance().camControl.update();
 
                     }).catch(err => {
                         alert (`ERRO: Não foi possível carretar o arquivo "${fname}.json".`);

@@ -128,6 +128,11 @@ async function main() {
     await core.blockModels.loadAll();
     createFPSBox();
 
+    core.blockRender.optimizeBlocks = true;
+    core.blockRender.optimizeSides = true;
+    core.blockRender.chunkActive = true;
+    core.blockRender.chunkCount = 2;
+
     let seed = Math.random() * 65535 | 0;
     //MapGenerator.create(workspace.getModelData(), 4, 10, seed);
     MapGenerator.createByPerc(workspace.getModelData(), 16, seed);

@@ -1,3 +1,4 @@
+import { BoxGeometry } from "./boxgeometry.js";
 import Conf from "./conf.js";
 import CoordConverter from "./coordconverter.js";
 import Core from "./core.js";
@@ -58,7 +59,6 @@ export default class Chunk {
         if (id >= 1)
             this.createBlock(ref, id, pos);
 
-        
         if (this.core.blockRender.optimizeBlocks)
             this.core.blockRender.setNeighborsVisibility(pos);
     }
@@ -97,7 +97,22 @@ export default class Chunk {
         if (id <= 0)
             return;
 
-        const cube = this.core.blocks.createBlockById(id);
+        // Optimizes the creation of blocks
+        let sides = this.core.mapData.ALL_SIDES;
+        if (this.core.blockRender.optimizeBlocks || this.core.blockRender.optimizeSides) {
+            // remove blocks that are not visible
+            const neighbors = this.core.mapData.neighbors(pos);
+            if (neighbors == this.core.mapData.ALL_SIDES)
+                return;
+
+            // remove sides that are not visible
+            if (this.core.blockRender.optimizeSides)
+                sides = this.core.mapData.sidesVisibility(neighbors);
+        }
+
+
+
+        const cube = this.core.blocks.createBlockById(id, sides);
         const realPos = CoordConverter.block2RealPosition(pos.x, pos.y, pos.z);
         cube.position.set(realPos.x, realPos.y, realPos.z);
         this.core.scene.add(cube);

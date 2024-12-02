@@ -11,6 +11,14 @@ export default class ModelData {
     /** @type {Position} */
     center = new Position();
 
+    // Sides
+	static RIGHT = 0x20;
+	static LEFT = 0x10;
+	static TOP = 0x08;
+	static BOTTOM = 0x04;
+	static FRONT = 0x02;
+	static BACK = 0x01;
+	static ALL_SIDES = 0x3F;
 
 
     /**
@@ -193,5 +201,33 @@ export default class ModelData {
             count++;
 
         return count;
+    }
+
+    neighbors(pos) {
+        let idx = this.indexOf(pos);
+        let sides = 0;
+        const size = this.size;
+        const ysize = size * size;
+
+        if (pos.x - 1 < 0 || pos.x - 1 >= size || this.data[idx - 1])    
+            sides |= ModelData.LEFT;
+        if (pos.x + 1 < 0 || pos.x + 1 >= size || this.data[idx + 1])
+            sides |= ModelData.RIGHT;
+
+        if (pos.z - 1 < 0 || pos.z - 1 >= size || this.data[idx - size])
+            sides |= ModelData.BACK;
+        if (pos.z + 1 < 0 || pos.z + 1 >= size || this.data[idx + size])
+            sides |= ModelData.FRONT;
+        
+        if (pos.y - 1 < 0 || pos.y - 1 >= this.height || this.data[idx - ysize])
+            sides |= ModelData.BOTTOM;
+        if (pos.y + 1 < 0 || pos.y + 1 >= this.height || this.data[idx + ysize])
+            sides |= ModelData.TOP;
+
+        return sides;
+    }
+
+    sidesVisibility(sides) {
+        return ~sides & ModelData.ALL_SIDES;
     }
 }
