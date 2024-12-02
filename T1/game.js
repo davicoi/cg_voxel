@@ -7,6 +7,7 @@ import MapGenerator from './core/mapgenerator.js';
 import FloatingBox from './other/floatingbox.js';
 import Conf from './core/conf.js';
 import Tool from './core/tool.js';
+import { createMenu } from './core/menu.js';
 
 
 
@@ -126,18 +127,19 @@ function render()
 
 async function main() {
     await core.blockModels.loadAll();
-    createFPSBox();
 
     core.blockRender.optimizeBlocks = true;
     core.blockRender.optimizeSides = true;
-    core.blockRender.chunkActive = true;
-    core.blockRender.chunkCount = 2;
+    core.blockRender.enableChunk(true);
+    core.blockRender.chunkCount = 3;
+
+    createFPSBox();
+    createMenu();
 
     let seed = Math.random() * 65535 | 0;
     //MapGenerator.create(workspace.getModelData(), 4, 10, seed);
     MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
 
-    core.blockRender.enableChunk(true);
     workspace.redraw();
 
     core.camControl.center();

@@ -118,17 +118,14 @@ export default class BlockRenderer {
     }
 
     adjustChunkRect(x, z, gridSize, mapSize) {
-        if (!this.chunkActive) {
+        if (!this.chunkActive || gridSize >= mapSize) {
             return { x: 0, z: 0, maxX: mapSize, maxZ: mapSize };
         }
-
+        
         const chunkSize = Conf.CHUNK_SIZE;
         mapSize = Math.ceil(mapSize / chunkSize) * chunkSize;
-        x = parseInt(x / chunkSize) * chunkSize - chunkSize;
-        z = parseInt(z / chunkSize) * chunkSize - chunkSize;
-    
-        if (gridSize > mapSize)
-            return { x: 0, y: 0, maxX: gridSize, maxY: gridSize };
+        x = parseInt(x - gridSize/2);
+        z = parseInt(z - gridSize/2);
     
         if (x + gridSize > mapSize)
             x = mapSize - gridSize;
@@ -139,9 +136,13 @@ export default class BlockRenderer {
             z = mapSize - gridSize;
         if (z < 0)
             z = 0;
+
+        x = parseInt(x / chunkSize) * chunkSize;
+        z = parseInt(z / chunkSize) * chunkSize;
     
         return { x, z, maxX: x + gridSize, maxZ: z + gridSize }
     }
+    
     generateChunkCoordinates(x, z, gridCount) {
         const size = Core.getInstance().mapData.getSize();
         const gridSize = (1 + gridCount * 2) * Conf.CHUNK_SIZE;
