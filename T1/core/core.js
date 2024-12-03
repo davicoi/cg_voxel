@@ -14,6 +14,8 @@ import WorkGrid from '../builder/workgrid.js';
 import WorkPlane from './workplane.js';
 import Tool from './tool.js';
 import ChunkSystem from './chunksystem.js';
+import InstancedMeshManager from './instancedmeshmanager.js';
+import BlockDraw from './blockdraw.js';
 
 
 
@@ -43,6 +45,10 @@ export default class Core {
     tool = new Tool();
     chunkSystem = new ChunkSystem();
 
+    /** @type {InstancedMeshManager} */
+    intancedMesh;
+    blockDraw;
+
 
     camera = null;
     scene;
@@ -59,8 +65,12 @@ export default class Core {
         this.clock = new THREE.Clock(true);
         this.blocks = Blocks.getInstance();
 
+
         this.initThreeJS();
         this.initCamera(x, y, z);
+
+        this.intancedMesh = new InstancedMeshManager(this.scene);
+        this.blockDraw = new BlockDraw(this, this.scene);
         this.initWorkspace(size, planeOrGrid);
     }
 

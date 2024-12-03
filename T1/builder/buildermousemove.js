@@ -4,6 +4,7 @@ import CoordConverter from '../core/coordconverter.js';
 import BlockRenderer from '../core/blockrenderer.js';
 import NavigateBlock from './navigateblock.js';
 import Workspace from '../core/workspace.js';
+import Core from '../core/core.js';
 
 export default class BuilderMouseMove {
     /** @type {Position} */
@@ -22,6 +23,7 @@ export default class BuilderMouseMove {
     navigator;
     /** @type {BlockRenderer} */
     blockRender;
+    core;
 
     /**
      * Constructor
@@ -36,6 +38,7 @@ export default class BuilderMouseMove {
         this.navigator = navigator;
         this.blockRender = blockRender;
         this.isEnabled = true;
+        this.core = Core.getInstance();
     }
 
     enable(status) {
@@ -63,7 +66,8 @@ export default class BuilderMouseMove {
 
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        const list = [workspace.workGrid.grid, ...this.blockRender.getBlockList()];
+        //const list = [workspace.workGrid.grid, ...this.blockRender.getBlockList()];
+        const list = [workspace.workGrid.grid, ...this.core.blockDraw.getBlockList()];
         const intersects = this.raycaster.intersectObjects(list);
 
         if (intersects.length > 0) {

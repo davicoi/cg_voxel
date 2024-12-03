@@ -68,7 +68,10 @@ export default class MouseMove {
         else
             this.raycaster.setFromCamera({x: 0, y:0}, this.camera);
 
-        const list = [workspace.workGrid.grid, ...this.blockRender.getBlockList()];
+//        const list = [workspace.workGrid.grid, ...this.blockRender.getBlockList()];
+        const list = [workspace.workGrid.grid, ...this.core.blockDraw.getBlockList()];
+        if (!this.len)
+            this.len = list.length;
         const intersects = this.raycaster.intersectObjects(list);
 
         if (intersects.length > 0) {

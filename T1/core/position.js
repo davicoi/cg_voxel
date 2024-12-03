@@ -32,14 +32,16 @@ export default class Position {
     }
 
     getRef() {
-        return  this.x.toString(16).padStart(WorldLimit.WIDTH_BYTES * 2, '0') +
-                this.y.toString(16).padStart(WorldLimit.DEPTH_BYTES * 2, '0') +
-                this.z.toString(16).padStart(WorldLimit.HEIGHT_BYTES * 2, '0');
+        const str = this.y.toString(16).padStart(WorldLimit.DEPTH_BYTES * 2, '0') +
+                    this.x.toString(16).padStart(WorldLimit.WIDTH_BYTES * 2, '0') +
+                    this.z.toString(16).padStart(WorldLimit.HEIGHT_BYTES * 2, '0');
+        return str;
     }
 
     static refFrom(x, y, z) {
-        return  parseInt(x).toString(16).padStart(WorldLimit.WIDTH_BYTES * 2, '0') +
-                parseInt(y).toString(16).padStart(WorldLimit.DEPTH_BYTES * 2, '0') +
-                parseInt(z).toString(16).padStart(WorldLimit.HEIGHT_BYTES * 2, '0');
+        const str = parseInt(y).toString(16).padStart(WorldLimit.DEPTH_BYTES * 2, '0') +
+                    parseInt(x).toString(16).padStart(WorldLimit.WIDTH_BYTES * 2, '0') +
+                    parseInt(z).toString(16).padStart(WorldLimit.HEIGHT_BYTES * 2, '0');
+        return str;
     }
 }

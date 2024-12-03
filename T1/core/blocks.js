@@ -36,6 +36,14 @@ export default class Blocks {
     /** @type {[BoxGeometry]} */
     cache = [];
 
+	static RIGHT = 0x20;
+	static LEFT = 0x10;
+	static TOP = 0x08;
+	static BOTTOM = 0x04;
+	static FRONT = 0x02;
+	static BACK = 0x01;
+	static ALL_SIDES = 0x3F;
+
     constructor() {
         if (blockInst)
             throw new ReferenceError("ERROR: Only 1 instance of Blocks() is allowed. Use Block.getInstance().")

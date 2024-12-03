@@ -99,10 +99,34 @@ export default class BlockRenderer {
         });
     }
 
+    recreateNeighbors(pos) {
+        const p = pos.clone();
+        const addPos = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
+        let chunk, id;
+
+        addPos.forEach(([x, y, z]) => {
+            p.x = pos.x + x;
+            p.y = pos.y + y;
+            p.z = pos.z + z;
+            id = this.core.mapData.get(p);
+            if (id < 1)
+                return;
+
+            chunk = this.chunkOf(p);
+            if (chunk) {
+                chunk.set(id, p, true);
+            }
+        });
+    }
+
     /** recreate all blocks */
     redraw() {
         this.clear();
+        this.core.blockDraw.clearAll();
+
+
         this.chunkList.forEach(chunk => {
+            chunk.clearAll();
             chunk.redraw();
         });
     }

@@ -130,7 +130,7 @@ async function main() {
 
     //core.chunkSystem.setChunkCount(Conf.DEFAULT_CHUNK_COUNT);
     core.chunkSystem.setEnable(true);
-    core.chunkSystem.setChunkCount(3);
+    core.chunkSystem.setChunkCount(2);
 
     core.blockRender.optimizeBlocks = true;
     core.blockRender.optimizeSides = true;

@@ -1,10 +1,10 @@
-import { BoxGeometry } from "./boxgeometry.js";
 import Conf from "./conf.js";
-import CoordConverter from "./coordconverter.js";
 import Core from "./core.js";
 import Position from "./position.js";
 
 export default class Chunk {
+    static nextChunkId = 0;
+    id;
     ref;
     startX;
     startZ;
@@ -13,10 +13,10 @@ export default class Chunk {
     core;
 
     /** @type {[THREE.Mesh]} */
-    blockList = [];         // list of all blocks
     blockMap = {};          // list of blocks indexed by reference
 
     constructor(startX, startZ) {
+        this.id = Chunk.nextChunkId++;
         this.core = Core.getInstance();
 
         const size = this.core.mapData.getSize();
@@ -30,25 +30,20 @@ export default class Chunk {
             this.removeBlock(ref);
         });
 
-        this.blockList = [];
+        this.blockMap = {};
+    }
+    
+    clearAll() {
         this.blockMap = {};
     }
 
-    getMeshList() {
-        return this.blockList;
-    }
-
-    getMeshByPos(pos) {
-        const ref = Position.refFrom(pos.x, pos.y, pos.z);
-        return this.blockMap[ref] || null;
-    }
 
     /**
      * 
      * @param {number} id 
      * @param {Position} pos 
      */
-    set(id, pos) {
+    set(id, pos, ignoreRecursion = false) {
         if (!this.core.mapData.set(id, pos))
             return;
 
@@ -61,6 +56,8 @@ export default class Chunk {
 
         if (this.core.blockRender.optimizeBlocks)
             this.core.blockRender.setNeighborsVisibility(pos);
+        if (!ignoreRecursion &&this.core.blockRender.optimizeSides)
+            this.core.blockRender.recreateNeighbors(pos);
     }
 
     setVisibility(pos, visible) {
@@ -80,13 +77,8 @@ export default class Chunk {
     /** Remove/destroy a block */
     removeBlock(ref) {
         if (this.blockMap[ref]) {
-            const mesh = this.blockMap[ref];
-            this.core.scene.remove(mesh);
-            mesh.geometry.dispose();
-            mesh.material.dispose();
-
-            this.removeFromBlockList(mesh);
-            this.blockMap[ref] = undefined;
+            this.core.blockDraw.remove(ref, this.id);
+            delete this.blockMap[ref];
             return true;
         }
         return false;
@@ -110,35 +102,17 @@ export default class Chunk {
                 sides = this.core.mapData.sidesVisibility(neighbors);
         }
 
-
-
-        const cube = this.core.blocks.createBlockById(id, sides);
-        const realPos = CoordConverter.block2RealPosition(pos.x, pos.y, pos.z);
-        cube.position.set(realPos.x, realPos.y, realPos.z);
-        this.core.scene.add(cube);
+        const cube = this.core.blockDraw.create(ref, id, pos, this.id, sides);
 
         this.blockMap[ref] = cube;
-        this.blockList.push(cube);
-    }
-
-    /**
-     * Remove mesh from mesh list
-     * @param {THREE.Mesh} mesh 
-     */
-    removeFromBlockList(mesh) {
-        const idx = this.blockList.indexOf(mesh);
-        if (idx >= 0)
-            this.blockList.splice(idx, 1);
     }
 
     /** recreate all blocks */
     redraw() {
-        this.clear();
+        //this.clear();
         let ref, pos = new Position();
         this.core.mapData.forEachBlock(this.startX, this.startZ, Conf.CHUNK_SIZE, Conf.CHUNK_SIZE, (id, x, y, z) => {
-            pos.x = x;
-            pos.y = y;
-            pos.z = z;
+            pos = new Position(x, y, z);
 
             // don't add non-visible blocks
             if (this.core.blockRender.optimizeBlocks && this.core.mapData.countNeighbors(pos) == 6)
