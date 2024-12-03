@@ -250,6 +250,6 @@ export default class MapGenerator {
         }
 
         const list = MapGenerator.randomTrees(model);
-        MapGenerator.addTrees(model, list);
+        MapGenerator.addTrees(model, list);;
     }
 }

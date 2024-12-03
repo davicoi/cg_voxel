@@ -20,7 +20,7 @@ const blockList = [
     '#6F9940',  // leaf 1
     '#087830',  // leaf 2
     '#fffafa',  // ground 3 (snow)
-    '#676767',  // ground 3 (snow)
+    '#676767',  // ground 3
 ];
 
 // instance of Blocks

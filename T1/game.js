@@ -143,7 +143,7 @@ async function main() {
     //MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
 
     const ids = [8, 8, 2, 2, 1, 1, 1, 1, 7, 7];
-    MapGenerator.createByAlt(workspace.getModelData(), 30, 10, ids, seed);
+    MapGenerator.createByAlt(workspace.getModelData(), 30, 10, ids, seed);;
 
     workspace.redraw();
 

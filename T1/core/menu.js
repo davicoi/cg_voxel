@@ -68,7 +68,7 @@ export function createMenu() {
         core.workspace.newModel(parseInt(settings.mapSize));
         // MapGenerator.createByPerc(core.workspace.getModelData(), 16, settings.seed);
         const ids = [8, 8, 2, 2, 1, 1, 1, 1, 7, 7];
-        MapGenerator.createByAlt(core.workspace.getModelData(), 30, 10, ids);
+        MapGenerator.createByAlt(core.workspace.getModelData(), 30, 10, ids);;
     
         core.workspace.redraw();
         core.camControl.center();
