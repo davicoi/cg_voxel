@@ -43,6 +43,15 @@ export default class MapGenerator {
         model.set(height + 1, pos.clone());
     }
 
+    static setByHeightV2(model, pos, height, ids) {
+        for (let y = 0 ; y < height ; y++) {
+            pos.y = y;
+            model.set(ids[y], pos);
+        }
+        pos.y = height;
+        model.set(ids[height], pos.clone());
+    }
+
 
     /**
      * 
@@ -218,4 +227,29 @@ export default class MapGenerator {
         MapGenerator.addTrees(model, list);
     }
 
+
+    static createByAlt(model, smooth = 50, alt = 5, ids, seed = null) {
+        const gridsize = model.getSize();
+        const {map, dist} = MapGenerator.perlinArray(model, gridsize, smooth, seed);
+
+        let min = 0, max = dist.length - 1;
+        for (; min < dist.length && dist[min] < 1 ; min++);
+        for (; max >= 0 && dist[max] < 1 ; max--);
+
+        let div = (max - min) / alt;
+        for (let i = 0 ; i < map.length ; i++)
+            map[i] = (map[i] - min) / div | 0;
+
+
+        const pos = new Position(0, 0, 0);
+        let val, idx = 0;
+        for (pos.z = 0 ; pos.z < gridsize ; pos.z++) {
+            for (pos.x = 0 ; pos.x < gridsize ; pos.x++) {
+                MapGenerator.setByHeightV2(model, pos, map[idx++], ids);
+            }
+        }
+
+        const list = MapGenerator.randomTrees(model);
+        MapGenerator.addTrees(model, list);
+    }
 }

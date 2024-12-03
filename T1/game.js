@@ -140,7 +140,10 @@ async function main() {
 
     let seed = Math.random() * 65535 | 0;
     //MapGenerator.create(workspace.getModelData(), 4, 10, seed);
-    MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
+    //MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
+
+    const ids = [8, 8, 2, 2, 1, 1, 1, 1, 7, 7];
+    MapGenerator.createByAlt(workspace.getModelData(), 30, 10, ids, seed);
 
     workspace.redraw();
 

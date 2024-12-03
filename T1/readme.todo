@@ -1,6 +1,7 @@
 
 Engine:
   ☐ fix workgrid -> remove and create a central block
+  ☐ fix delete/E (block visibility error)
 
   ☐ menu
   ☐ raycaster
