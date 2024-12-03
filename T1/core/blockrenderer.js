@@ -10,14 +10,12 @@ export default class BlockRenderer {
     optimizeBlocks = false;
     optimizeSides = false;
     chunkActive = false;
-    chunkCount = 2;
 
     /** @type {Core} */
     core;
 
     /** @type {[Chunk]} */
     chunkList = [];
-    recalcRect = {minX: -1, minZ: -1, maxX: -1, maxZ: -1};
 
 
 
@@ -48,15 +46,7 @@ export default class BlockRenderer {
         });
         this.chunkList = [];
         
-        if (!this.chunkActive) {
-            const size = this.core.mapData.getSize();
-            for (let z = 0 ; z < size ; z += Conf.CHUNK_SIZE) {
-                for (let x = 0 ; x < size ; x += Conf.CHUNK_SIZE) {
-                    this.chunkList.push(new Chunk(x, z));
-                }            }
-        } else {
-            this.updateChunk(true);
-        }
+        this.updateChunk(true);
     }
 
     /** Returns a list of all blocks */
@@ -117,94 +107,26 @@ export default class BlockRenderer {
         });
     }
 
-    adjustChunkRect(x, z, gridSize, mapSize) {
-        if (!this.chunkActive || gridSize >= mapSize) {
-            return { x: 0, z: 0, maxX: mapSize, maxZ: mapSize };
-        }
-        
-        const chunkSize = Conf.CHUNK_SIZE;
-        mapSize = Math.ceil(mapSize / chunkSize) * chunkSize;
-        x = parseInt(x - gridSize/2);
-        z = parseInt(z - gridSize/2);
-    
-        if (x + gridSize > mapSize)
-            x = mapSize - gridSize;
-        if (x < 0)
-            x = 0;
-        
-        if (z + gridSize > mapSize)
-            z = mapSize - gridSize;
-        if (z < 0)
-            z = 0;
-
-        x = parseInt(x / chunkSize) * chunkSize;
-        z = parseInt(z / chunkSize) * chunkSize;
-    
-        return { x, z, maxX: x + gridSize, maxZ: z + gridSize }
-    }
-    
-    generateChunkCoordinates(x, z, gridCount) {
-        const size = Core.getInstance().mapData.getSize();
-        const gridSize = (1 + gridCount * 2) * Conf.CHUNK_SIZE;
-
-        const rect = this.adjustChunkRect(x, z, gridSize, size);
-
-        const centerX = (rect.x + rect.maxX) / 2;
-        const centerZ = (rect.z + rect.maxZ) / 2;
-
-        // area that the user can move without having to recalculate the chunks
-        const recalcRect = {
-            minX: centerX - Conf.CHUNK_SIZE * 0.75,
-            minZ: centerZ - Conf.CHUNK_SIZE * 0.75, 
-            maxX: centerX + Conf.CHUNK_SIZE * 0.75,
-            maxZ: centerZ + Conf.CHUNK_SIZE * 0.75
-        }
-
-        // coordinates of all visible chunks
-        const list = [];
-        let i, ref;
-        for (let j = rect.z ; j < rect.maxZ ; j += Conf.CHUNK_SIZE) {
-            for (i = rect.x ; i < rect.maxX ; i += Conf.CHUNK_SIZE) {
-                ref = Chunk.refFrom(i, j);
-                list.push({x: i, z: j, ref});
-            }
-        }
-    
-        return {
-            recalcRect,
-            rect,
-            list
-        }
-    }
-
-    chunkPendingUpdate() {
-        if (!this.chunkActive)
-            return false;
-
-        const pos = this.core.camControl.getPlanePosition();
-            
-        return (pos && (pos.x < this.recalcRect.minX || pos.x >= this.recalcRect.maxX ||
-                pos.z < this.recalcRect.minZ || pos.z >= this.recalcRect.maxZ));
-    }
-
     update(delta) {
-        if (this.chunkActive)
-            this.updateChunk();
+        this.updateChunk();
     }
 
     updateChunk(force = false) {
-        if (!force && !this.chunkPendingUpdate())
-            return;
-        
+        // FIXME: map load (without mouse)
         const pos = this.core.camControl.getPlanePosition();
         if (!pos)
             return;
-        const grids = this.generateChunkCoordinates(pos.x, pos.z, this.chunkCount);
-        this.recalcRect = grids.recalcRect;
+
+        const newRect = this.core.chunkSystem.getRect(pos.x, pos.z, this.core.mapData.getSize());
+        if (!force && this.core.chunkSystem.isEqual(newRect))
+            return;
+
+        this.core.chunkSystem.setActive(newRect);
+        const list = this.core.chunkSystem.getCoordList();
 
         // remove chunks
         for (let i = 0 ; i < this.chunkList.length ; i++) {
-            if (binaryIndexOf(grids.list, this.chunkList[i].ref, (val, b) => val - b.ref) >= 0)
+            if (binaryIndexOf(list, this.chunkList[i].ref, (val, b) => val - b.ref) >= 0)
                 continue;
 
             this.chunkList[i].clear();
@@ -214,11 +136,11 @@ export default class BlockRenderer {
 
         // add chunks
         let chunk;
-        for (let i = 0 ; i < grids.list.length ; i++) {
-            if (binaryIndexOf(this.chunkList, grids.list[i].ref, (val, b) => val - b.ref) >= 0)
+        for (let i = 0 ; i < list.length ; i++) {
+            if (binaryIndexOf(this.chunkList, list[i].ref, (val, b) => val - b.ref) >= 0)
                 continue;
 
-            chunk = new Chunk(grids.list[i].x, grids.list[i].z)
+            chunk = new Chunk(list[i].x, list[i].z)
             chunk.redraw();
             this.chunkList.push(chunk);
         }
@@ -228,10 +150,14 @@ export default class BlockRenderer {
     enableChunk(enable) {
         enable = enable == true;
 
-        if (this.chunkActive != enable) {
-            this.chunkActive = enable;
+        if (this.core.chunkSystem.isEnabled() != enable) {
+            this.core.chunkSystem.setEnable(enable);
             this.updateChunk(true);
             this.redraw();
         }
+    }
+
+    isChunkActive() {
+        return this.core.chunkSystem.isEnabled();
     }
 };

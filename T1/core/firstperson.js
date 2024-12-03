@@ -76,7 +76,7 @@ export default class FirstPersonCtl {
         const centerZ = parseInt(size / 2) * Conf.CUBE_SIZE;
         const centerY = this.core.mapData.firstEmptyFrom(centerX, centerZ) * Conf.CUBE_SIZE;
     
-        this.core.camControl.setPosition(centerX, centerY + Conf.CUBE_SIZE * 3, centerZ);
+        this.core.camControl.setPosition(centerX, centerY + Conf.CUBE_SIZE * 10, centerZ);
     }
 
     cam2Pos(x, y, z) {

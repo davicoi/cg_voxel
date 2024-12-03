@@ -11,6 +11,7 @@ const Conf = {
     BLOCKMODELS_PATH: 'assets/blockmodel/',
 
     CHUNK_SIZE: 8,
+    DEFAULT_CHUNK_COUNT: 2
 };
 
 export default Conf;

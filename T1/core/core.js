@@ -13,6 +13,7 @@ import KeyboardState from '../../libs/util/KeyboardState.js';
 import WorkGrid from '../builder/workgrid.js';
 import WorkPlane from './workplane.js';
 import Tool from './tool.js';
+import ChunkSystem from './chunksystem.js';
 
 
 
@@ -40,6 +41,7 @@ export default class Core {
     keyboard = new KeyboardState();
     /** @type {Tool} */
     tool = new Tool();
+    chunkSystem = new ChunkSystem();
 
 
     camera = null;

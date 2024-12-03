@@ -9,8 +9,8 @@ export function createMenu() {
     const settings = {
         'optimizeBlocks': core.blockRender.optimizeBlocks == true,
         'optimizeSides': core.blockRender.optimizeSides == true,
-        'chunkSystem': core.blockRender.chunkActive == true,
-        'distance': core.blockRender.chunkCount,
+        'chunkSystem': core.chunkSystem.isEnabled(),
+        'distance': core.chunkSystem.getChunkCount(),
 
         'randomSeed': true,
         'seed': 0,
@@ -47,7 +47,7 @@ export function createMenu() {
     optFolder.add(settings, 'distance', 2, 50, 1).name('Distance').onChange((value) => {
         value = parseInt(value);
         const redraw = core.blockRender.chunkCount != value;
-        core.blockRender.chunkCount = value;
+        core.chunkSystem.setChunkCount(value);;
         if (redraw)
             core.blockRender.redraw();
     });
@@ -68,6 +68,7 @@ export function createMenu() {
         core.workspace.newModel(parseInt(settings.mapSize));
         MapGenerator.createByPerc(core.workspace.getModelData(), 16, settings.seed);
         core.workspace.redraw();
+        core.camControl.center();
     
     }}, 'generateNewMap').name('<b>NEW MAP</b>');
     
