@@ -12,6 +12,7 @@ export default class WorkPlane {
     scene;
     /** @type {THREE.GridHelper} */
     grid;
+    backgrounColor;
     
 
     /** @type {THREE.Mesh} */
@@ -27,10 +28,11 @@ export default class WorkPlane {
      * @param {number} gridSize 
      * @param {boolean} showAxis 
      */
-    constructor(scene, showAxis = false) {
+    constructor(scene, showAxis = false, backgrounColor) {
         this.scene = scene;
         this.gridSize = 10;
         this.showAxis = showAxis;
+        this.backgrounColor = backgrounColor;
     }
 
     setWorkspace(workspace) {
@@ -55,7 +57,8 @@ export default class WorkPlane {
      */
     createGrid(scene) {
         const gridSize = this.gridSize;
-        this.grid = new THREE.GridHelper(gridSize * Conf.CUBE_SIZE, gridSize, 0xFF0000, 0x00FF00);
+        // FIXME: REMOVE THE PLANE FROM THE SCENE
+        this.grid = new THREE.GridHelper(gridSize * Conf.CUBE_SIZE, gridSize, this.backgrounColor, this.backgrounColor);
         this.grid.position.x = gridSize/2 * Conf.CUBE_SIZE - this.addPos;
         this.grid.position.y = -Conf.CUBE_SIZE/2;
         this.grid.position.z = gridSize/2 * Conf.CUBE_SIZE - this.addPos;

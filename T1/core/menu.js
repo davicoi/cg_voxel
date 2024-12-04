@@ -11,7 +11,7 @@ export function createMenu() {
         'optimizeSides': core.blockRender.optimizeSides == true,
         'chunkSystem': core.chunkSystem.isEnabled(),
         'distance': core.chunkSystem.getChunkCount(),
-        'useFog': core.blockRender.useFog == true,
+        'useFog': core.fog.isEnabled(),
 
         'randomSeed': true,
         'seed': 0,
@@ -54,17 +54,15 @@ export function createMenu() {
         value = parseInt(value);
         const redraw = core.blockRender.chunkCount != value;
         core.chunkSystem.setChunkCount(value);;
-        if (redraw)
+        if (redraw) {
             core.blockRender.redraw();
+            core.fog.enable(true);
+        }
     });
 
     // fog
     optFolder.add(settings, 'useFog').name('Fog').onChange(function (value) {
-        const enabled = core.blockRender.fogEnabled();
-        core.blockRender.useFog = value;
-        core.blockRender.enableFog(false);
-        if (core.blockRender.useFog && value && core.camControl.isFirstPerson())
-            core.blockRender.enableFog(true);
+        core.fog.enableFogSystem(value);
     });
     
     // random

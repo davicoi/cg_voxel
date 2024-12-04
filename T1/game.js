@@ -132,7 +132,7 @@ async function main() {
     core.blockRender.setOptimizeSides(true);
     core.chunkSystem.setEnable(true);
     core.chunkSystem.setChunkCount(Conf.DEFAULT_CHUNK_COUNT);
-    core.blockRender.useFog = true;
+    core.fog.enableFogSystem(true);
 
 
     createFPSBox();
@@ -146,7 +146,8 @@ async function main() {
     MapGenerator.createByAlt(workspace.getModelData(), 30, 10, ids, seed);;
 
     workspace.redraw();
-    core.blockRender.enableFog(true);
+    core.fog.updateDistance();
+    core.fog.enableFogSystem(true);
 
     core.camControl.center();
 

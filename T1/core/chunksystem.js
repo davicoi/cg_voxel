@@ -14,6 +14,7 @@ export default class ChunkSystem {
     constructor() {
         if (ChunkSystem.instance)
             throw new ReferenceError("ERROR: Only 1 instance of ChunkSystem() is allowed.");
+        ChunkSystem.instance = this;
         this.setChunkCount(Conf.DEFAULT_CHUNK_COUNT);
     }
 
@@ -56,15 +57,9 @@ export default class ChunkSystem {
     setChunkCount(count) {
         this.chunkCount = count | 0;
         this.gridSize = (1 + this.chunkCount * 2) * Conf.CHUNK_SIZE;
-
-        if (!Core.getInstance())
-            return;
-
-        const blockRender = Core.getInstance().blockRender;
-        const enabled = blockRender.fogEnabled();
-        blockRender.enableFog(false);
-        if (enabled)
-            blockRender.enableFog(true);
+        const core = Core.getInstance();
+        if (core && core.fog)
+            core.fog.updateDistance();
     }
 
     getChunkCount() {

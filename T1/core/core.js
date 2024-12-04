@@ -17,7 +17,7 @@ import ChunkSystem from './chunksystem.js';
 import InstancedDraw from './instancedDraw.js';
 import BlockDraw from './blockdraw.js';
 import Conf from './conf.js';
-
+import Fog from './fog.js';
 
 
 /**
@@ -45,7 +45,10 @@ export default class Core {
     keyboard = new KeyboardState();
     /** @type {Tool} */
     tool = new Tool();
-    chunkSystem = new ChunkSystem();
+    /** @type {ChunkSystem} */
+    chunkSystem
+    /** @type {Fog} */
+    fog;
 
     /** @type {BlockDraw|InstancedDraw} */
     blockDraw;
@@ -103,11 +106,12 @@ export default class Core {
 
 
     initWorkspace(size, planeOrGrid) {
-        const workGrid = planeOrGrid ? new WorkPlane(this.scene, false) : new WorkGrid(this.scene, false);
+        const workGrid = planeOrGrid ? new WorkPlane(this.scene, false, this.backgrounColor) : new WorkGrid(this.scene, false, this.backgrounColor);
 
         this.blockRender = new BlockRenderer();
         this.blockModels = new BlockModels();
-    
+        this.chunkSystem = new ChunkSystem();
+
         this.workspace = new Workspace({
             blockRender: this.blockRender,
             workGrid,
@@ -117,5 +121,6 @@ export default class Core {
         this.mapData = this.workspace.getModelData();
 
         this.blockRender.init();
+        this.fog = new Fog();
     }
 }
