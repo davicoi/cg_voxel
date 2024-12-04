@@ -10,6 +10,7 @@ export default class BlockRenderer {
     optimizeBlocks = false;
     optimizeSides = false;
     chunkActive = false;
+    useFog = false;
 
     /** @type {Core} */
     core;
@@ -35,6 +36,22 @@ export default class BlockRenderer {
 
     optimize(enable) {
         this.optimizeBlocks = enable;
+    }
+
+    enableFog(enable) {
+        const chunkInfo = this.core.chunkSystem.getActive();
+        if (!this.useFog || !enable || !chunkInfo) {
+            this.core.scene.fog = null;
+            return;
+        }
+
+        const max = chunkInfo.maxRadius;
+        const visible = chunkInfo.alwaysVisible;
+        this.core.scene.fog = new THREE.Fog(this.core.backgrounColor, visible - Conf.CHUNK_SIZE, visible);
+    }
+
+    fogEnabled() {
+        return this.core.scene.fog != null;
     }
 
     clear() {

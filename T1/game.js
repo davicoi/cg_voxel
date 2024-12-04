@@ -15,7 +15,7 @@ import { createMenu } from './core/menu.js';
 /**
  * init Builder
  */
-const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, true);
+const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, true, 0xc0c0c0);
 
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
 core.camControl.initFirstPerson(centerPos, 8, centerPos);
@@ -132,6 +132,7 @@ async function main() {
     core.blockRender.setOptimizeSides(true);
     core.chunkSystem.setEnable(true);
     core.chunkSystem.setChunkCount(Conf.DEFAULT_CHUNK_COUNT);
+    core.blockRender.useFog = true;
 
 
     createFPSBox();
@@ -145,6 +146,7 @@ async function main() {
     MapGenerator.createByAlt(workspace.getModelData(), 30, 10, ids, seed);;
 
     workspace.redraw();
+    core.blockRender.enableFog(true);
 
     core.camControl.center();
 

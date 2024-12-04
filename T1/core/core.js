@@ -25,6 +25,7 @@ import Conf from './conf.js';
  */
 export default class Core {
     static instance = null;
+    backgrounColor = 0xd0d0d0;
 
     /** @type {Workspace} */
     workspace;
@@ -57,11 +58,12 @@ export default class Core {
     workGrid;
 
 
-    constructor(size, x, y, z, planeOrGrid = true) {
+    constructor(size, x, y, z, planeOrGrid = true, backgrounColor = 0xd0d0d0) {
         if (Core.instance)
             throw new ReferenceError("ERROR: Only 1 instance of Core() is allowed.");
         Core.instance = this;
 
+        this.backgrounColor = backgrounColor;
         this.clock = new THREE.Clock(true);
         this.blocks = Blocks.getInstance();
 
@@ -90,7 +92,7 @@ export default class Core {
 
     initThreeJS() {
         this.scene = new THREE.Scene();
-        this.renderer = initRenderer('rgb(150,150,150)');
+        this.renderer = initRenderer(this.backgrounColor);
         this.light = initDefaultBasicLight(this.scene);
     }
 

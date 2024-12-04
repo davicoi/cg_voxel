@@ -1,5 +1,6 @@
 import Conf from './conf.js';
 import Chunk from './chunk.js'
+import Core from './core.js';
 
 export default class ChunkSystem {
     static instance = null;
@@ -25,6 +26,25 @@ export default class ChunkSystem {
         return ChunkSystem.instance;
     }
 
+    getActive() {
+        if (!this.activeRect || this.activeRect.maxX == 0 || this.activeRect.maxZ == 0)
+            return null;
+
+        // FIXME: 1 to 1.5
+        const moveRadius = (1 * Conf.CHUNK_SIZE) / 2;
+        let alwaysVisible = (this.activeRect.maxX - this.activeRect.x) / 2
+        if (this.gridSize < this.activeRect.maxX - this.activeRect.x)
+            alwaysVisible -= moveRadius;
+        
+        return {
+            rect: this.activeRect,
+            maxRadius: (this.activeRect.maxX - this.activeRect.x) / 2,
+            alwaysVisible: (this.activeRect.maxX - this.activeRect.x) / 2 - moveRadius,
+            moveRadius
+        }
+    }
+
+
     setEnable(enabled) {
         this.enabled = enabled;
     }
@@ -36,7 +56,17 @@ export default class ChunkSystem {
     setChunkCount(count) {
         this.chunkCount = count | 0;
         this.gridSize = (1 + this.chunkCount * 2) * Conf.CHUNK_SIZE;
+
+        if (!Core.getInstance())
+            return;
+
+        const blockRender = Core.getInstance().blockRender;
+        const enabled = blockRender.fogEnabled();
+        blockRender.enableFog(false);
+        if (enabled)
+            blockRender.enableFog(true);
     }
+
     getChunkCount() {
         return this.chunkCount;
     }

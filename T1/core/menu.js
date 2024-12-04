@@ -11,11 +11,11 @@ export function createMenu() {
         'optimizeSides': core.blockRender.optimizeSides == true,
         'chunkSystem': core.chunkSystem.isEnabled(),
         'distance': core.chunkSystem.getChunkCount(),
+        'useFog': core.blockRender.useFog == true,
 
         'randomSeed': true,
         'seed': 0,
         'mapSize': Conf.DEFAULT_SIZE
-
     };
 
 
@@ -58,6 +58,15 @@ export function createMenu() {
             core.blockRender.redraw();
     });
 
+    // fog
+    optFolder.add(settings, 'useFog').name('Fog').onChange(function (value) {
+        const enabled = core.blockRender.fogEnabled();
+        core.blockRender.useFog = value;
+        core.blockRender.enableFog(false);
+        if (core.blockRender.useFog && value && core.camControl.isFirstPerson())
+            core.blockRender.enableFog(true);
+    });
+    
     // random
     const mapFolder = gui.addFolder('Map');
     mapFolder.add(settings, 'mapSize', 35, 512, 1).name('MapSize');

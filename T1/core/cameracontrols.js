@@ -116,10 +116,13 @@ export default class CameraControls {
 
     toggle() {
         if (this.orbit && this.firstPerson) {
-            if (this.active === this.orbit)
+            if (this.active === this.orbit) {
+                this.core.blockRender.enableFog(true);
                 this.useFirstPerson();
-            else
+            } else {
+                this.core.blockRender.enableFog(false);
                 this.useOrbit();
+            }
         }
     }
 
