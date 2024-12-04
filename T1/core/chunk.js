@@ -1,3 +1,4 @@
+import { dynamicBufferAttribute } from "../../build/jsm/nodes/Nodes.js";
 import Conf from "./conf.js";
 import Core from "./core.js";
 import Position from "./position.js";
@@ -27,13 +28,13 @@ export default class Chunk {
 
     clear() {
         const entries = Object.keys(this.blockMap).forEach(ref => {
-            this.removeBlock(ref);
+            this.removeBlock(ref, this.blockMap[ref]);
         });
-
         this.blockMap = {};
     }
     
     clearAll() {
+        console.log('clearAll');
         this.blockMap = {};
     }
 
@@ -44,6 +45,7 @@ export default class Chunk {
      * @param {Position} pos 
      */
     set(id, pos, ignoreRecursion = false) {
+        const ble = this.core.mapData.get(pos);
         if (!this.core.mapData.set(id, pos))
             return;
 
@@ -77,6 +79,7 @@ export default class Chunk {
     /** Remove/destroy a block */
     removeBlock(ref) {
         if (this.blockMap[ref]) {
+            console.log('clear', ref);
             this.core.blockDraw.remove(ref, this.id);
             delete this.blockMap[ref];
             return true;
@@ -102,9 +105,8 @@ export default class Chunk {
                 sides = this.core.mapData.sidesVisibility(neighbors);
         }
 
-        const cube = this.core.blockDraw.create(ref, id, pos, this.id, sides);
-
-        this.blockMap[ref] = cube;
+        const info = this.core.blockDraw.create(ref, id, pos, this.id, sides);
+        this.blockMap[ref] = info;
     }
 
     /** recreate all blocks */

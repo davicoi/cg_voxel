@@ -133,7 +133,7 @@ async function main() {
     core.chunkSystem.setChunkCount(2);
 
     core.blockRender.optimizeBlocks = true;
-    core.blockRender.optimizeSides = true;
+    //core.blockRender.optimizeSides = true;
 
     createFPSBox();
     createMenu();

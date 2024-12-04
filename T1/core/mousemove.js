@@ -5,6 +5,7 @@ import BlockRenderer from './blockrenderer.js';
 import PreviewBlock from './previewblock.js';
 import Workspace from './workspace.js';
 import Core from './core.js';
+import { int } from '../../build/jsm/nodes/Nodes.js';
 
 export default class MouseMove {
     /** @type {Position} */
@@ -24,6 +25,13 @@ export default class MouseMove {
     /** @type {BlockRenderer} */
     blockRender;
     core = Core.getInstance();
+
+    tmpMatrix = new THREE.Matrix4();
+    tmpPosition = new THREE.Vector3();
+    tmpVec3 = new THREE.Vector3();
+    tempQuater = new THREE.Quaternion();
+
+
 
     /**
      * Constructor
@@ -93,6 +101,18 @@ export default class MouseMove {
         }
     }
 
+    /**
+     * 
+     * @param {InstancedMesh} mesh 
+     * @param {number} instanceId 
+     * @returns 
+     */
+    extractPos(mesh, instanceId) {
+        mesh.getMatrixAt(instanceId, this.tmpMatrix);
+        this.tmpMatrix.decompose(this.tmpPosition, this.tempQuater, this.tmpVec3);
+        return this.tmpPosition;
+    }
+
     /** Set the selection block position based on the grid */
     updateFromGrid(intersect) {
         const interPos = intersect.point;
@@ -111,8 +131,13 @@ export default class MouseMove {
 
     /** Set the selection block position based on one of the blocks */
     updateFromMesh(intersect) {
+        let pos;
+        if (intersect.instanceId !== undefined)
+            pos = this.extractPos(intersect.object, intersect.instanceId);
+        else
+            pos = intersect.object.position;
+
         // convert real position to block position
-        const pos = intersect.object.position;
         const blockPos = CoordConverter.real2BlockPosition(pos.x, pos.y, pos.z);
         this.lastRemovePos = blockPos.clone();
 

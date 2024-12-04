@@ -3,15 +3,19 @@ import Position from "./position.js";
 import MaterialList from "./materiallist.js";
 import Blocks from "./blocks.js";
 
-export default class InstancedMeshManager {
+
+
+export default class InstancedDraw {
     /** @type {[InstancedMeshEx]} */
     list = [];
     scene;
+    core;
 
     materialList;
     blocks;
 
-    constructor(scene) {
+    constructor(core, scene) {
+        this.core = core;
         this.scene = scene;
         this.materialList = MaterialList.getInstance();
         this.blocks = Blocks.getInstance();
@@ -36,15 +40,32 @@ export default class InstancedMeshManager {
         return mesh;
     }
 
-    addBlock(id, pos, ref = null) {
-        if (!ref)
-            ref = Position.refFrom(pos.x, pos.y, pos.z);
+    // addBlock(id, pos, ref = null) {
+    //     if (!ref)
+    //         ref = Position.refFrom(pos.x, pos.y, pos.z);
 
-        const meshEx = this.getMeshByType(id);
-        meshEx.add(pos, ref);
+    //     const meshEx = this.getMeshByType(id);
+    //     meshEx.add(pos, ref);
+    // }
+    create(ref, typeId, pos, chunkId = 0, sides = 0xFFFF) {
+        // if (InstancedMeshEx.refs[ref])
+        //     this.remove(ref, chunkId);
+        const meshEx = this.getMeshByType(typeId);
+        return meshEx.add(pos, ref);
     }
 
-    remove(ref) {
+    getBlockList() {
+        const list = [];
+        this.list.forEach(mesh => {
+            if (mesh)
+                list.push(...mesh.getBlockList())
+        });
+        return list;
+    }
+
+
+    remove(ref, chunkId = 0) {
+        console.log ('xxxx');
         const info = InstancedMeshEx.refs[ref];
         if (!info)
             return;
@@ -55,8 +76,10 @@ export default class InstancedMeshManager {
         this.list[type].remove(ref);
     }
 
-    removeAll() {
-        this.list.forEach(mesh => mesh.removeAll());
+    clearAll() {
+        this.list.forEach(mesh => {
+            if (mesh) mesh.removeAll();
+        });
         InstancedMeshEx.refs = {};
     }
 

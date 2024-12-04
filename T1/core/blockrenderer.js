@@ -41,13 +41,25 @@ export default class BlockRenderer {
         if (!this.core.mapData)
             return;
 
+        this.core.blockDraw.clearAll();
+
         this.chunkList.forEach(chunk => {
-            chunk.clear();
+            chunk.clearAll();
         });
         this.chunkList = [];
         
         this.updateChunk(true);
     }
+
+    /** recreate all blocks */
+    redraw() {
+        this.clear();
+
+        this.chunkList.forEach(chunk => {
+            chunk.redraw();
+        });
+    }
+
 
     /** Returns a list of all blocks */
     getBlockList() {
@@ -58,12 +70,6 @@ export default class BlockRenderer {
         return list;
     }
 
-    getBlockByPos(pos) {
-        const chunk = this.chunkOf(pos);
-        if (chunk)
-            return chunk.getMeshByPos(pos);
-    }
-    
     chunkOf(pos) {
         const ref = Chunk.refFrom(pos.x, pos.z);
         const chunk = this.chunkList.find(chunk => chunk.ref == ref);
@@ -116,18 +122,6 @@ export default class BlockRenderer {
             if (chunk) {
                 chunk.set(id, p, true);
             }
-        });
-    }
-
-    /** recreate all blocks */
-    redraw() {
-        this.clear();
-        this.core.blockDraw.clearAll();
-
-
-        this.chunkList.forEach(chunk => {
-            chunk.clearAll();
-            chunk.redraw();
         });
     }
 

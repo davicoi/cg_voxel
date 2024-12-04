@@ -14,7 +14,7 @@ import WorkGrid from '../builder/workgrid.js';
 import WorkPlane from './workplane.js';
 import Tool from './tool.js';
 import ChunkSystem from './chunksystem.js';
-import InstancedMeshManager from './instancedmeshmanager.js';
+import InstancedDraw from './instancedDraw.js';
 import BlockDraw from './blockdraw.js';
 
 
@@ -45,8 +45,7 @@ export default class Core {
     tool = new Tool();
     chunkSystem = new ChunkSystem();
 
-    /** @type {InstancedMeshManager} */
-    intancedMesh;
+    /** @type {BlockDraw|InstancedDraw} */
     blockDraw;
 
 
@@ -69,8 +68,8 @@ export default class Core {
         this.initThreeJS();
         this.initCamera(x, y, z);
 
-        this.intancedMesh = new InstancedMeshManager(this.scene);
-        this.blockDraw = new BlockDraw(this, this.scene);
+        this.blockDraw = new InstancedDraw(this, this.scene);
+//        this.blockDraw = new BlockDraw(this, this.scene);
         this.initWorkspace(size, planeOrGrid);
     }
 

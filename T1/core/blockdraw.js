@@ -76,7 +76,7 @@ export default class BlockDraw {
         return this.blockList;
     }
 
-    clearAll(chunkId = 0) {
+    clearAll() {
         this.blockList.forEach(mesh => {
             this.removeMesh(mesh);
         })
