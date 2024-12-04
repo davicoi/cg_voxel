@@ -142,8 +142,9 @@ async function main() {
     //MapGenerator.create(workspace.getModelData(), 4, 10, seed);
     //MapGenerator.createByPerc(workspace.getModelData(), 16, seed);
 
-    const ids = [8, 8, 2, 2, 1, 1, 1, 1, 7, 7];
-    MapGenerator.createByAlt(workspace.getModelData(), 30, 10, ids, seed);;
+    //const ids = [8, 8, 2, 2, 1, 1, 1, 1, 7, 7];
+    const ids = [8, 9, 10, 11, 2, 1, 1, 1, 1, 1, 7, 7];
+    MapGenerator.createByAlt(workspace.getModelData(), 30, ids.length, ids, seed);;
 
     workspace.redraw();
     core.fog.updateDistance();

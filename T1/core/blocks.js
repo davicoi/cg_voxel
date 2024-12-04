@@ -13,14 +13,17 @@ import { BoxGeometry } from './boxgeometry.js';
 /** Default block list, the first is ALWAYS EMPTY (0 = no block) */
 const blockList = [
     '',
-    '#6AA84F',  // ground 1
-    '#E69138',  // ground 2
-    '#63462D',  // wood 1
-    '#310e00',  // wood 2
-    '#6F9940',  // leaf 1
-    '#087830',  // leaf 2
-    '#fffafa',  // ground 3 (snow)
-    '#676767',  // ground 3
+    '#6AA84F',  //  1 ground 1
+    '#E69138',  //  2 ground 2
+    '#63462D',  //  3  wood 1
+    '#310e00',  //  4 wood 2
+    '#6F9940',  //  5 leaf 1
+    '#087830',  //  6 leaf 2
+    '#fffafa',  //  7 ground 3 (snow)
+    '#404040',  //  8 ground 3
+    '#555555',  //  9 ground 4
+    '#676767',  // 10 ground 5
+    '#D68130',  // 11 ground 6
 ];
 
 // instance of Blocks
