@@ -128,12 +128,11 @@ function render()
 async function main() {
     await core.blockModels.loadAll();
 
-    //core.chunkSystem.setChunkCount(Conf.DEFAULT_CHUNK_COUNT);
+    core.blockRender.setOptimizeBlocks(true);
+    core.blockRender.setOptimizeSides(true);
     core.chunkSystem.setEnable(true);
-    core.chunkSystem.setChunkCount(2);
+    core.chunkSystem.setChunkCount(Conf.DEFAULT_CHUNK_COUNT);
 
-    core.blockRender.optimizeBlocks = true;
-    //core.blockRender.optimizeSides = true;
 
     createFPSBox();
     createMenu();

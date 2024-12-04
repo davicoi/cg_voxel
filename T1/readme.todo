@@ -2,6 +2,8 @@
 Engine:
   ☐ fix workgrid -> remove and create a central block
   ☐ add blocks using instancedmesh
+  ☐ fix new block selection with instanced mesh
+  ☐ for for chunk system
 
   ☐ menu
   ☐ raycaster

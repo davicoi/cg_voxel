@@ -23,18 +23,24 @@ export function createMenu() {
     const optFolder = gui.addFolder('Optimizations');
 
     // optimize
-    optFolder.add(settings, 'optimizeBlocks').name('Optimize Blocks').onChange((value) => {
-        const redraw = core.blockRender.optimizeBlocks != value;
-        core.blockRender.optimizeBlocks = value;
+    optFolder.add(settings, 'optimizeBlocks').name('Optimize Blocks').onChange(function (value) {
+        const oldValue = core.blockRender.optimizeBlocks;
+        core.blockRender.setOptimizeBlocks(value);
+        const redraw = core.blockRender.optimizeBlocks != oldValue;
         if (redraw)
             core.blockRender.redraw();
+        else if (value != oldValue)
+            this.setValue(oldValue);
     });
     
-    optFolder.add(settings, 'optimizeSides').name('Optimize Sides').onChange((value) => {
-        const redraw = core.blockRender.optimizeSides != value;
-        core.blockRender.optimizeSides = value;
+    optFolder.add(settings, 'optimizeSides').name('Optimize Sides').onChange(function (value) {
+        const oldValue = core.blockRender.optimizeSides;
+        core.blockRender.setOptimizeSides(value);
+        const redraw = core.blockRender.optimizeSides != oldValue;
         if (redraw)
             core.blockRender.redraw();
+        else if (value != oldValue)
+            this.setValue(oldValue);
     });
     
     optFolder.add(settings, 'chunkSystem').name('Chunk System').onChange((value) => {

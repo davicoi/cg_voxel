@@ -34,7 +34,6 @@ export default class Chunk {
     }
     
     clearAll() {
-        console.log('clearAll');
         this.blockMap = {};
     }
 
@@ -79,7 +78,6 @@ export default class Chunk {
     /** Remove/destroy a block */
     removeBlock(ref) {
         if (this.blockMap[ref]) {
-            console.log('clear', ref);
             this.core.blockDraw.remove(ref, this.id);
             delete this.blockMap[ref];
             return true;

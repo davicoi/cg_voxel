@@ -178,4 +178,18 @@ export default class BlockRenderer {
     isChunkActive() {
         return this.core.chunkSystem.isEnabled();
     }
+
+    setOptimizeBlocks(optimize) {
+        if (this.core.blockDraw.supported.optimizationBlocks && optimize)
+            this.optimizeBlocks = true;
+        else
+            this.optimizeBlocks = false;
+    }
+
+    setOptimizeSides(optimize) {
+        if (this.core.blockDraw.supported.optimizationSides && optimize)
+            this.optimizeSides = true;
+        else
+            this.optimizeSides = false;
+    }
 };

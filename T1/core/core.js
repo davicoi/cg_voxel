@@ -16,6 +16,7 @@ import Tool from './tool.js';
 import ChunkSystem from './chunksystem.js';
 import InstancedDraw from './instancedDraw.js';
 import BlockDraw from './blockdraw.js';
+import Conf from './conf.js';
 
 
 
@@ -68,8 +69,10 @@ export default class Core {
         this.initThreeJS();
         this.initCamera(x, y, z);
 
-        this.blockDraw = new InstancedDraw(this, this.scene);
-//        this.blockDraw = new BlockDraw(this, this.scene);
+        if (Conf.INSTANCED_MESH_OPTIMIZATION)
+            this.blockDraw = new InstancedDraw(this, this.scene);
+        else
+            this.blockDraw = new BlockDraw(this, this.scene);
         this.initWorkspace(size, planeOrGrid);
     }
 

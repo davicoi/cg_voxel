@@ -110,7 +110,6 @@ export default class InstancedMeshEx {
     }
 
     remove(ref) {
-        console.log(ref);
         const info = InstancedMeshEx.refs[ref];
         if (!info)
             return;

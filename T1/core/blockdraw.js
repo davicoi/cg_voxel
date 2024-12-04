@@ -10,6 +10,11 @@ export default class BlockDraw {
     blockList = [];
     blockListCount = 0;
 
+    supported = {
+        optimizationBlocks: true,
+        optimizationSides: true
+    };
+
     constructor(core, scene) {
         this.scene = scene;
         this.core = core;

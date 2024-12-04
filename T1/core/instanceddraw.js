@@ -14,6 +14,12 @@ export default class InstancedDraw {
     materialList;
     blocks;
 
+    supported = {
+        optimizationBlocks: true,
+        optimizationSides: false
+    };
+
+
     constructor(core, scene) {
         this.core = core;
         this.scene = scene;
@@ -65,7 +71,6 @@ export default class InstancedDraw {
 
 
     remove(ref, chunkId = 0) {
-        console.log ('xxxx');
         const info = InstancedMeshEx.refs[ref];
         if (!info)
             return;
