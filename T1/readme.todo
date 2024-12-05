@@ -1,7 +1,6 @@
 
 Engine:
   ☐ fix workgrid -> remove and create a central block
-  ☐ fix new block selection with instanced mesh
 
   ☐ menu
   ☐ raycaster
@@ -14,6 +13,7 @@ Optimize Blocks:
   ☐ 3 -> create a single block for sequential blocks (I haven't checked how it behaves with texture yet)
 
 Archive:
+  ✔ fix new block selection with instanced mesh @done(24-12-04 21:09) @project(Engine)
   ✔ add blocks using instancedmesh @done(24-12-04 17:55) @project(Engine)
   ✔ fog for chunk system @done(24-12-04 19:57) @project(Engine)
   ✔ fix delete/E (block visibility error) @done(24-12-03 20:22) @project(Engine)

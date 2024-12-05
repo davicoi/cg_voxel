@@ -207,19 +207,22 @@ export default class MapGenerator {
         const gridsize = model.getSize();
         const {map, dist} = MapGenerator.perlinArray(model, gridsize, smooth, seed);
 
-        const percList = [0.5, 0.35, 0.15];
+        const percList = [0.25, 0.65, 0.10];
         //const percList = [0.4, 0.25, 0.17, 0.12, 0.06];
         const numList = MapGenerator.distByPerc(dist, percList, gridsize*gridsize);
 
         const height = MapGenerator.normalizeByPerc(map, numList);
 
 
+        const blockList = [2, 1, 7, 2];
+        //const blockList = [2, 1, 10, 9];
         const pos = new Position(0, 0, 0);
         let val, idx = 0;
         for (pos.z = 0 ; pos.z < gridsize ; pos.z++) {
             for (pos.x = 0 ; pos.x < gridsize ; pos.x++) {
                 val = height[ map[idx++] ];
                 MapGenerator.setByHeight(model, pos, val);
+                MapGenerator.setByHeightV2(model, pos, val, blockList);
             }
         }
 

@@ -80,7 +80,8 @@ export function createMenu() {
 
         core.workspace.newModel(parseInt(settings.mapSize));
         // MapGenerator.createByPerc(core.workspace.getModelData(), 16, settings.seed);
-        const ids = [8, 9, 10, 11, 2, 1, 1, 1, 1, 1, 7, 7];
+//        const ids = [8, 9, 10, 11, 2, 1, 1, 1, 1, 1, 7, 7];
+        const ids = [8, 9, 2, 2, 1, 1, 1, 7, 7];
         MapGenerator.createByAlt(core.workspace.getModelData(), 30, ids.length, ids, settings.seed);
         
         core.workspace.redraw();
