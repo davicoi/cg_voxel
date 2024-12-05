@@ -102,6 +102,9 @@ export default class Core {
     initCamera(x, y, z) {
         this.camControl = new CameraControls(this.renderer);
         this.camera = this.camControl.init(x, y, z);
+        window.addEventListener('resize', () => {
+            onWindowResize(this.camera, this.renderer);
+        }, false);
     }
 
 

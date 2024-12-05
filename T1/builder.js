@@ -36,12 +36,14 @@ function centerCamera() {
     const size = workspace.getModelData().getSize();
     const centerPos = parseInt(size / 2) * workspace.cubeSize;
     
-    core.camControl.setTarget(centerPos, 0, centerPos);
+    //core.camControl.setTarget(centerPos, 0, centerPos);
+    core.camControl.setTarget(centerPos, 0, 0);
 
     core.camera.position.x = centerPos;
     core.camera.position.z = 15 + centerPos;
-    core.camera.position.y = 15;
+    core.camera.position.y = 10;
     core.camControl.update();
+    core.camControl.orbit.updatePos();
 }
 
 workspace.setOnLoad(() => {
@@ -62,7 +64,8 @@ let infoBox = new InfoBox();
     infoBox.add("* Scroll to zoom in/out."); 
     infoBox.add("* ,/. to select a block."); 
     infoBox.show();
-
+infoBox.infoBox.style.color = "black";
+infoBox.infoBox.style.border = "1px solid #888";
 
 
 /**
@@ -70,7 +73,12 @@ let infoBox = new InfoBox();
  */
 mouseMove.register();
 
-KeyControl.init(navigate, mouseMove, () => {});
+KeyControl.init(navigate, mouseMove, () => {
+    if (infoBox.infoBox.style.display == '')
+        infoBox.infoBox.style.display = "none";
+    else
+        infoBox.infoBox.style.display = '';
+});
 
 window.addEventListener('click', (event) => {
     const pos = mouseMove.getAddPos();

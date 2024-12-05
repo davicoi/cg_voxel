@@ -57,8 +57,10 @@ export default class BuilderMenu {
                 if (fname) {
                     fetch(`./assets/blockmodel/${fname}.json`)
                     .then(resp => {
-                        if (!resp.ok)
-                            throw new Error(`ERRO: Arquivo do modelo "${fname}.json" não encontrado.`);
+//                         if (!resp.ok) {
+// //                            throw new Error(`ERRO: Arquivo do modelo "${fname}.json" não encontrado.`);
+//                             alert(`ERRO: Arquivo do modelo "${fname}.json" não encontrado.`);
+//                         }
 
                         return resp.json();
 
