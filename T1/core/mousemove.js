@@ -5,7 +5,6 @@ import BlockRenderer from './blockrenderer.js';
 import PreviewBlock from './previewblock.js';
 import Workspace from './workspace.js';
 import Core from './core.js';
-import { int } from '../../build/jsm/nodes/Nodes.js';
 
 export default class MouseMove {
     /** @type {Position} */

@@ -93,11 +93,14 @@ export default class InstancedMeshEx {
             this.remove(ref);
 
         // new block
-        const idx = mesh.count
+        const idx = mesh.count;
+        mesh.count++;
         const matrix = new THREE.Matrix4();
         matrix.setPosition(pos.x, pos.y, pos.z);
-        mesh.setMatrixAt( idx, matrix );
-        mesh.count++;
+        mesh.setMatrixAt(idx, matrix);
+
+        mesh.boundingSphere = null;                 // "before raycasting"
+        // mesh.computeBoundingSphere();               // BUG: update bounding sphere fails randomly (raycast) "now"
         mesh.instanceMatrix.needsUpdate = true;
 
         // add ref
@@ -105,7 +108,7 @@ export default class InstancedMeshEx {
         while (this.refList[meshId].length < mesh.count)
             this.refList[meshId].push(null);
         this.refList[meshId][idx] = ref;
-            
+
         return InstancedMeshEx.refs[ref];
     }
 

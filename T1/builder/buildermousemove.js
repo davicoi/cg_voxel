@@ -25,6 +25,12 @@ export default class BuilderMouseMove {
     blockRender;
     core;
 
+    tmpMatrix = new THREE.Matrix4();
+    tmpPosition = new THREE.Vector3();
+    tmpVec3 = new THREE.Vector3();
+    tempQuater = new THREE.Quaternion();
+
+
     /**
      * Constructor
      * @param {THREE.Camera} camera
@@ -107,8 +113,13 @@ export default class BuilderMouseMove {
 
     /** Set the selection block position based on one of the blocks */
     updateFromMesh(intersect) {
+        let pos;
+        if (intersect.instanceId !== undefined)
+            pos = this.extractPos(intersect.object, intersect.instanceId);
+        else
+            pos = intersect.object.position;
+
         // convert real position to block position
-        const pos = intersect.object.position;
         const blockPos = CoordConverter.real2BlockPosition(pos.x, pos.y, pos.z);
         this.lastRemovePos = blockPos.clone();
 
@@ -119,6 +130,18 @@ export default class BuilderMouseMove {
 
         // create the block
         this.navigator.setPos(blockPos.x, blockPos.y, blockPos.z);
+    }
+
+    /**
+     * 
+     * @param {InstancedMesh} mesh 
+     * @param {number} instanceId 
+     * @returns 
+     */
+    extractPos(mesh, instanceId) {
+        mesh.getMatrixAt(instanceId, this.tmpMatrix);
+        this.tmpMatrix.decompose(this.tmpPosition, this.tempQuater, this.tmpVec3);
+        return this.tmpPosition;
     }
 
     /** Get the last block selected with the mouse. */
