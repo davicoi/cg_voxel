@@ -1,7 +1,5 @@
 import * as THREE from    '../../build/three.module.js';
 import { initCamera } from "../../libs/util/util.js";
-import { PointerLockControls } from '../../build/jsm/controls/PointerLockControls.js';
-import { OrbitControls } from '../../build/jsm/controls/OrbitControls.js';
 import Core from './core.js';
 import Conf from './conf.js';
 
@@ -11,7 +9,9 @@ import FirstPersonCtl from './firstperson.js';
 export default class CameraControls {
     /** @type {OrbitCtl|FirstPersonCtl} */
     active;
+    /** @type {OrbitCtl} */
     orbit;
+    /** @type {FirstPersonCtl} */
     firstPerson;
     
     speed = 5;
@@ -24,10 +24,6 @@ export default class CameraControls {
     renderer;
     /** @type {THREE.PerspectiveCamera} */
     camera;
-    /** @type {OrbitControls} */
-    orbit;
-    /** @type {PointerLockControls} */
-    pointerLock;
     /** @type {Core} */
     core;
 
@@ -115,14 +111,12 @@ export default class CameraControls {
     }
 
     toggle() {
-        if (this.orbit && this.firstPerson) {
-            if (this.active === this.orbit) {
-                this.core.blockRender.enableFog(true);
-                this.useFirstPerson();
-            } else {
-                this.core.blockRender.enableFog(false);
-                this.useOrbit();
-            }
+        if (this.active === this.orbit) {
+            this.useFirstPerson();
+            this.core.fog.enable(true);
+        } else {
+            this.useOrbit();
+            this.core.fog.enable(false);
         }
     }
 

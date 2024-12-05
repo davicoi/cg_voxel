@@ -3,6 +3,7 @@ import { PointerLockControls } from '../../build/jsm/controls/PointerLockControl
 import Conf from './conf.js';
 import Core from './core.js';
 import Position from './position.js';
+import CamCollision from './camcollision.js';
 
 /*
     init(x, y, z)
@@ -35,6 +36,8 @@ export default class FirstPersonCtl {
     lastPosition = new THREE.Vector3();
     lookAtVector = new THREE.Vector3();
     oldPos = new THREE.Vector3();
+
+    camCollision = new CamCollision();
 
     constructor(x, y, z) {
         this.init(x, y, z);
@@ -89,6 +92,15 @@ export default class FirstPersonCtl {
         return pos;
     }
 
+    getRealPos() {
+        const camAddY = Conf.CUBE_SIZE / 3 * 2;
+        return {
+            x: this.core.camera.position.x / Conf.CUBE_SIZE,
+            y: (this.core.camera.position.y - camAddY) / Conf.CUBE_SIZE,
+            z: this.core.camera.position.z / Conf.CUBE_SIZE
+        }
+    }
+
     setPosition(x, y, z) {
         this.core.camera.position.set(x, y, z);
     }
@@ -113,14 +125,21 @@ export default class FirstPersonCtl {
         if (this.moveRight)             this.firstPerson.moveRight(speed * delta);
         else if (this.moveLeft)         this.firstPerson.moveRight(speed * -1 * delta);
 
-        // "TEMPORARY colission detection"
-        const pos = this.getPosition();
-        const mapModel = this.core.workspace.getModelData();
-        if (mapModel.get(pos) >= 1) {
+
+        if (this.camCollision.horizontalCheck(this.getRealPos())) {
             this.core.camera.position.x = this.oldPos.x;
             //this.core.camera.position.y = pos.y;
             this.core.camera.position.z = this.oldPos.z;
         }
+
+        // // "TEMPORARY colission detection"
+        // const pos = this.getPosition();
+        // const mapModel = this.core.workspace.getModelData();
+        // if (mapModel.get(pos) >= 1) {
+        //     this.core.camera.position.x = this.oldPos.x;
+        //     //this.core.camera.position.y = pos.y;
+        //     this.core.camera.position.z = this.oldPos.z;
+        // }
     }
 
     updateKeys(keyboard, delta) {

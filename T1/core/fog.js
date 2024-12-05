@@ -38,7 +38,7 @@ export default class Fog {
             return;
 
         const visible = chunkInfo.alwaysVisible;
-        const min = visible - Conf.CHUNK_SIZE;
+        const min = visible - Conf.CHUNK_SIZE * 0.8;
         const max = visible;
 
         if (min != this.min || max != this.max) {

@@ -16,9 +16,9 @@ export default class Position {
     }
 
     set(x, y, z) {
-        this.x = x | 0;
-        this.y = y | 0;
-        this.z = z | 0;
+        this.x = Math.round(x);
+        this.y = Math.round(y);
+        this.z = Math.round(z);
     }
 
     add(x, y, z) {
