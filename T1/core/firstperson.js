@@ -76,15 +76,15 @@ export default class FirstPersonCtl {
         const centerZ = parseInt(size / 2) * Conf.CUBE_SIZE;
         const centerY = this.core.mapData.firstEmptyFrom(centerX, centerZ) * Conf.CUBE_SIZE;
     
-        this.core.camControl.setPosition(centerX, centerY + Conf.CUBE_SIZE * 10, centerZ);
+        this.core.camControl.setPosition(centerX, centerY + Conf.CUBE_SIZE * 2, centerZ);
     }
 
     cam2Pos(x, y, z) {
         const camAddY = Conf.CUBE_SIZE / 3 * 2;
         const pos = new Position(
-            x / Conf.CUBE_SIZE + 0.01,
-            (y - camAddY) / Conf.CUBE_SIZE + 0.01,
-            z / Conf.CUBE_SIZE + 0.01,
+            x / Conf.CUBE_SIZE + 0.001,
+            (y - camAddY) / Conf.CUBE_SIZE + 0.001,
+            z / Conf.CUBE_SIZE + 0.001,
         );
         return pos;
     }
@@ -115,7 +115,8 @@ export default class FirstPersonCtl {
 
         // "TEMPORARY colission detection"
         const pos = this.getPosition();
-        if (this.core.mapData.get(pos) >= 1) {
+        const mapModel = this.core.workspace.getModelData();
+        if (mapModel.get(pos) >= 1) {
             this.core.camera.position.x = this.oldPos.x;
             //this.core.camera.position.y = pos.y;
             this.core.camera.position.z = this.oldPos.z;

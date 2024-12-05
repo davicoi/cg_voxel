@@ -153,12 +153,16 @@ export default class CameraControls {
 
         //const pos = this.camToPosition();
         const pos = this.active.getPosition();
+        while (this.core.mapData.get(pos) > 0) {
+            pos.y++;
+            this.camera.position.y += Conf.CUBE_SIZE;
+        }
         pos.y--;
 
         // minimum height at which the player can stand
         const isGround = this.core.mapData.get(pos) > 0;
-        const minY = !isGround ? camAddY : (pos.y + 1) * Conf.CUBE_SIZE + camAddY;
-        
+        let minY = !isGround ? camAddY : (pos.y + 1) * Conf.CUBE_SIZE + camAddY;
+
         // gravity
         let y = this.camera.position.y;
         y += this.gravityCurrentSpeed * delta;

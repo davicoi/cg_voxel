@@ -88,9 +88,10 @@ export default class OrbitCtl {
         const size = this.core.mapData.getSize();
         const centerX = parseInt(size / 2) * Conf.CUBE_SIZE;
         const centerZ = parseInt(size / 2) * Conf.CUBE_SIZE;
+        const height = this.core.mapData.firstEmptyFrom(centerX, centerZ) * Conf.CUBE_SIZE;
 
         this.setTarget(centerX, 0, centerZ);
-        this.setPosition(centerX, 25, 35 + centerZ);
+        this.setPosition(centerX, 25 + height, 35 + centerZ);
     }
 
     cam2Pos(x, y, z) {
