@@ -12,6 +12,7 @@ export function createMenu() {
         'chunkSystem': core.chunkSystem.isEnabled(),
         'distance': core.chunkSystem.getChunkCount(),
         'useFog': core.fog.isEnabled(),
+        'lightAngle': core.getLightAngle(),
 
         'randomSeed': true,
         'seed': 0,
@@ -65,6 +66,10 @@ export function createMenu() {
         core.fog.enableFogSystem(value);
     });
     
+    optFolder.add(settings, 'lightAngle', 0, 359, 5).name('Angle of Light').onChange((value) => {
+        core.setLightAngle(value);
+    });
+
     // random
     const mapFolder = gui.addFolder('Map');
     mapFolder.add(settings, 'mapSize', 35, 512, 1).name('MapSize');

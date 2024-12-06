@@ -14,7 +14,7 @@ import WorkGrid from '../builder/workgrid.js';
 import WorkPlane from './workplane.js';
 import Tool from './tool.js';
 import ChunkSystem from './chunksystem.js';
-import InstancedDraw from './instancedDraw.js';
+import InstancedDraw from './instanceddraw.js';
 import BlockDraw from './blockdraw.js';
 import Conf from './conf.js';
 import Fog from './fog.js';
@@ -53,7 +53,7 @@ export default class Core {
     /** @type {BlockDraw|InstancedDraw} */
     blockDraw;
 
-
+    /** @type {THREE.PerspectiveCamera} */
     camera = null;
     scene;
     renderer;
@@ -96,8 +96,34 @@ export default class Core {
     initThreeJS() {
         this.scene = new THREE.Scene();
         this.renderer = initRenderer(this.backgrounColor);
+        /** @type {THREE.HemisphereLight}  */
         this.light = initDefaultBasicLight(this.scene);
+
+        // let degree = 0;
+        // setInterval(() => {
+        //     degree = (degree + 5) % 360;
+        //     const rad = degree / 180 * Math.PI;
+        //     let x = Math.sin(rad) * 256;
+        //     let y = Math.cos(rad) * 256;
+        //     this.light.position.set(x, y, 0);
+        //     console.log (degree);
+        // }, 100);
+
+        this.setLightAngle(65);
     }
+
+    setLightAngle(degree, mapSize = 256) {
+        degree %= 360;
+        const rad = THREE.MathUtils.degToRad(degree);
+        const zRad = THREE.MathUtils.degToRad(45);
+        this.light.position.set(Math.cos(rad) * mapSize, Math.sin(rad) * mapSize, Math.cos(zRad) * mapSize);
+        this.lightDegree = degree;;
+    }
+
+    getLightAngle() {
+        return this.lightDegree;
+    }
+    
 
     initCamera(x, y, z) {
         this.camControl = new CameraControls(this.renderer);
