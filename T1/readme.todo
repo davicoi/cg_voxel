@@ -2,15 +2,13 @@
 Engine:
   ☐ fix workgrid -> remove and create a central block
   ☐ fix vertical collision
-  ☐ mouse pointer for first person camera
-
 
   ☐ block positions can have negative values - model data @low 
 
   ☐ change perlin 2d to 3d @low
 
-
 Archive:
+  ✔ mouse pointer for first person camera @done(24-12-06 20:56) @project(Engine)
   ✔ menu @done(24-12-06 14:13) @project(Engine)
   ✔ raycaster @done(24-12-06 14:13) @project(Engine)
   ✘ 3 -> create a single block for sequential blocks (I haven't checked how it behaves with texture yet) @cancelled(24-12-06 14:13) @project(Optimize Blocks)

@@ -20,6 +20,7 @@ const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, true, 0xc0c0c0);
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
 core.camControl.initFirstPerson(centerPos, 8, centerPos);
 core.camControl.initOrbit(centerPos, 25, 35 + centerPos);
+core.camControl.initCursor();
 
 
 // three js
@@ -150,7 +151,7 @@ async function main() {
     core.fog.updateDistance();
     core.fog.enableFogSystem(true);
 
-    core.camControl.center();
+    core.camControl.centralize();
 
     render();
 }

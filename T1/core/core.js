@@ -1,7 +1,6 @@
 import * as THREE from    '../../build/three.module.js';
 import {initRenderer,
-        initDefaultBasicLight,
-        onWindowResize } from "../../libs/util/util.js";
+        initDefaultBasicLight } from "../../libs/util/util.js";
 
 import BlockModels from "./blockmodels.js";
 import BlockRenderer from "./blockrenderer.js";
@@ -58,6 +57,7 @@ export default class Core {
     camera = null;
     /** @type {THREE.Scene} */
     scene;
+    /** @type {THREE.WebGLRenderer} */
     renderer;
 
     workGrid;
@@ -129,7 +129,7 @@ export default class Core {
         this.camControl = new CameraControls(this.renderer);
         this.camera = this.camControl.init(x, y, z);
         window.addEventListener('resize', () => {
-            onWindowResize(this.camera, this.renderer);
+            this.camControl.resize();            
         }, false);
     }
 
@@ -152,4 +152,57 @@ export default class Core {
         this.blockRender.init();
         this.fog = new Fog();
     }
+
+
+    createCrosshair() {
+        // Criar uma textura de cruz para o HUD
+        const canvas = document.createElement('canvas');
+        canvas.width = 15;
+        canvas.height = 15;
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, 7);  // Linha horizontal
+        ctx.lineTo(15, 7);
+        ctx.moveTo(7, 0);  // Linha vertical
+        ctx.lineTo(7, 15);
+        ctx.stroke();
+        
+        // Criar a textura para o sprite
+        const texture = new THREE.CanvasTexture(canvas);
+
+        // Criar o sprite com a textura
+        const material = new THREE.SpriteMaterial({ map: texture });
+        const crosshair = new THREE.Sprite(material);
+        
+        // Ajustar o tamanho do sprite
+        crosshair.scale.set(0.1, 0.1, 1);  // Tamanho do sprite (ajustado para 15x15)
+        return crosshair;
+    }
+
+    renderHUD() {
+        const crosshair = this.createCrosshair();
+        // Renderizar o HUD (sprite da mira) como uma sobreposição
+        // Adiciona o sprite do cursor no centro da tela
+        const hudContext = this.renderer.getContext(); // Obter o contexto de renderização
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        console.log(hudContext);
+        this.renderer.get
+
+        // Posicionar a mira no centro da tela
+        crosshair.position.set(0, 0, -1);  // Definido para estar sempre na frente da câmera
+        
+        // Posicionar o sprite de mira no centro da tela (HUD)
+        crosshair.position.x = width / 2;
+        crosshair.position.y = height / 2;
+
+        // Renderizar a cena 3D
+        renderer.render(scene, camera);
+
+        // Aqui, apenas o sprite de mira será desenhado no HUD, sem ser afetado pela cena 3D
+        hudContext.drawImage(crosshair, (width / 2) - (crosshair.scale.x * 15 / 2), (height / 2) - (crosshair.scale.y * 15 / 2));
+    }
+
 }

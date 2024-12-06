@@ -1,10 +1,11 @@
 import * as THREE from    '../../build/three.module.js';
-import { initCamera } from "../../libs/util/util.js";
+import { initCamera, onWindowResize } from "../../libs/util/util.js";
 import Core from './core.js';
 import Conf from './conf.js';
 
 import OrbitCtl from './orbit.js';
 import FirstPersonCtl from './firstperson.js';
+import Cursor from './cursor.js';
 
 export default class CameraControls {
     /** @type {OrbitCtl|FirstPersonCtl} */
@@ -13,6 +14,8 @@ export default class CameraControls {
     orbit;
     /** @type {FirstPersonCtl} */
     firstPerson;
+    /** @type {number} */
+    cursor;
     
     speed = 5;
     gravityActive = true;
@@ -52,6 +55,16 @@ export default class CameraControls {
             this.active = this.firstPerson;
             this.firstPerson.enable(true);
         }
+    }
+
+    initCursor() {
+        this.cursor = new Cursor();
+    }
+
+    resize() {
+        onWindowResize(this.core.camera, this.core.renderer);
+        if (this.cursor)
+            this.cursor.centralize();
     }
 
     save() {
@@ -99,6 +112,8 @@ export default class CameraControls {
             this.active.enable(false);
             this.active = this.orbit;
             this.orbit.enable(true);
+            if (this.cursor)
+                this.cursor.show(false);
         }
     }
 
@@ -107,6 +122,8 @@ export default class CameraControls {
             this.active.enable(false);
             this.active = this.firstPerson;
             this.firstPerson.enable(true);
+            if (this.cursor)
+                this.cursor.show(true);
         }
     }
 
@@ -120,7 +137,7 @@ export default class CameraControls {
         }
     }
 
-    center() {
+    centralize() {
         this.active.center();
     }
 

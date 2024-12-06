@@ -42,7 +42,7 @@ export default class MouseMove {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         this.camera = camera;
-        this.navigator = navigator;
+        //this.navigator = navigator;
         this.blockRender = blockRender;
         this.isEnabled = true;
     }
@@ -94,7 +94,7 @@ export default class MouseMove {
             this.addPos = null;
 
             if (this.isVisible) {
-                this.navigator.show(false);
+                //this.navigator.show(false);
                 this.isVisible = false;
             }
         }
@@ -123,7 +123,7 @@ export default class MouseMove {
 
         const pos = CoordConverter.real2BlockPosition(x, y, z);
 
-        this.navigator.setPos(pos.x, pos.y, pos.z);
+        //this.navigator.setPos(pos.x, pos.y, pos.z);
         this.lastRemovePos = pos;
         this.addPos = pos;
     }
@@ -146,7 +146,7 @@ export default class MouseMove {
         this.addPos = blockPos;
 
         // create the block
-        this.navigator.setPos(blockPos.x, blockPos.y, blockPos.z);
+        //this.navigator.setPos(blockPos.x, blockPos.y, blockPos.z);
     }
 
     /** Get the last block selected with the mouse. */

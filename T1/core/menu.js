@@ -66,7 +66,7 @@ export function createMenu() {
         core.fog.enableFogSystem(value);
     });
     
-    optFolder.add(settings, 'lightAngle', 0, 359, 5).name('Angle of Light').onChange((value) => {
+    optFolder.add(settings, 'lightAngle', 0, 359, 5).name('Light Angle').onChange((value) => {
         console.log (core.getLightAngle());
         core.setLightAngle(value);
     });
@@ -91,7 +91,7 @@ export function createMenu() {
         MapGenerator.createByAlt(core.workspace.getModelData(), 30, ids.length, ids, settings.seed);
         
         core.workspace.redraw();
-        core.camControl.center();
+        core.camControl.centralize();
     
     }}, 'generateNewMap').name('<b>NEW MAP</b>');
     
