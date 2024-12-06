@@ -26,6 +26,7 @@ import Fog from './fog.js';
 export default class Core {
     static instance = null;
     backgrounColor = 0xd0d0d0;
+    lightAngle = 45;
 
     /** @type {Workspace} */
     workspace;
@@ -55,6 +56,7 @@ export default class Core {
 
     /** @type {THREE.PerspectiveCamera} */
     camera = null;
+    /** @type {THREE.Scene} */
     scene;
     renderer;
 
@@ -112,18 +114,16 @@ export default class Core {
         this.setLightAngle(65);
     }
 
-    setLightAngle(degree, mapSize = 256) {
-        degree %= 360;
-        const rad = THREE.MathUtils.degToRad(degree);
+    setLightAngle(angle, mapSize = 256) {
+        const rad = THREE.MathUtils.degToRad(angle);
         const zRad = THREE.MathUtils.degToRad(45);
         this.light.position.set(Math.cos(rad) * mapSize, Math.sin(rad) * mapSize, Math.cos(zRad) * mapSize);
-        this.lightDegree = degree;;
+        this.lightAngle = angle % 360
     }
 
     getLightAngle() {
-        return this.lightDegree;
+        return this.lightAngle;
     }
-    
 
     initCamera(x, y, z) {
         this.camControl = new CameraControls(this.renderer);

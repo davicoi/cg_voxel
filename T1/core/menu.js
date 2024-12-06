@@ -67,6 +67,7 @@ export function createMenu() {
     });
     
     optFolder.add(settings, 'lightAngle', 0, 359, 5).name('Angle of Light').onChange((value) => {
+        console.log (core.getLightAngle());
         core.setLightAngle(value);
     });
 

@@ -1,19 +1,19 @@
 
 Engine:
   ☐ fix workgrid -> remove and create a central block
-  ☐ fix collision
+  ☐ fix vertical collision
+  ☐ mouse pointer for first person camera
 
-  ☐ menu
-  ☐ raycaster
 
   ☐ block positions can have negative values - model data @low 
 
   ☐ change perlin 2d to 3d @low
 
-Optimize Blocks: 
-  ☐ 3 -> create a single block for sequential blocks (I haven't checked how it behaves with texture yet)
 
 Archive:
+  ✔ menu @done(24-12-06 14:13) @project(Engine)
+  ✔ raycaster @done(24-12-06 14:13) @project(Engine)
+  ✘ 3 -> create a single block for sequential blocks (I haven't checked how it behaves with texture yet) @cancelled(24-12-06 14:13) @project(Optimize Blocks)
   ✔ fix new block selection with instanced mesh @done(24-12-04 21:09) @project(Engine)
   ✔ add blocks using instancedmesh @done(24-12-04 17:55) @project(Engine)
   ✔ fog for chunk system @done(24-12-04 19:57) @project(Engine)

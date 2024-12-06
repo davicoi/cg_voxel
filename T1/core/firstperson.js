@@ -1,4 +1,4 @@
-import * as THREE from    '../../build/three.module.js';
+import * as THREE from '../../build/three.module.js';
 import { PointerLockControls } from '../../build/jsm/controls/PointerLockControls.js';
 import Conf from './conf.js';
 import Core from './core.js';
