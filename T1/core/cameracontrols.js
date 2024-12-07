@@ -59,6 +59,7 @@ export default class CameraControls {
 
     initCursor() {
         this.cursor = new Cursor();
+        this.cursor.show(false);
     }
 
     resize() {
@@ -112,8 +113,6 @@ export default class CameraControls {
             this.active.enable(false);
             this.active = this.orbit;
             this.orbit.enable(true);
-            if (this.cursor)
-                this.cursor.show(false);
         }
     }
 
@@ -122,8 +121,6 @@ export default class CameraControls {
             this.active.enable(false);
             this.active = this.firstPerson;
             this.firstPerson.enable(true);
-            if (this.cursor)
-                this.cursor.show(true);
         }
     }
 

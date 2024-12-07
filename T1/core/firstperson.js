@@ -46,9 +46,17 @@ export default class FirstPersonCtl {
     init(x, y, z) {
         this.firstPerson = new PointerLockControls(this.core.camera, this.core.renderer.domElement);
         this.lastPosition = typeof x !== 'undefined' ? new THREE.Vector3(x, y,z) : this.core.camera.position.clone();
-        //this.core.scene.add(this.pointerLock.getObject());
-        
         this.firstPerson.enable = false;
+
+        this.firstPerson.addEventListener('lock', () => {
+            if (this.core.camControl.cursor)
+                this.core.camControl.cursor.show(true);
+        });
+        this.firstPerson.addEventListener('unlock', () => {
+            if (this.core.camControl.cursor)
+                this.core.camControl.cursor.show(false);
+        });
+
 
         return this.firstPerson;
     }
