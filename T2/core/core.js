@@ -1,6 +1,5 @@
 import * as THREE from    '../../build/three.module.js';
-import {initRenderer,
-        initDefaultBasicLight } from "../../libs/util/util.js";
+import {initRenderer} from "../../libs/util/util.js";
 
 import BlockModels from "./blockmodels.js";
 import BlockRenderer from "./blockrenderer.js";
@@ -17,6 +16,9 @@ import InstancedDraw from './instanceddraw.js';
 import BlockDraw from './blockdraw.js';
 import Conf from './conf.js';
 import Fog from './fog.js';
+import ModelsLoader from './modelsloader.js';
+import Character from './character.js';
+import LightControl from './lightcontrol.js';
 
 
 /**
@@ -25,7 +27,7 @@ import Fog from './fog.js';
 export default class Core {
     static instance = null;
     backgrounColor = 0xd0d0d0;
-    lightAngle = 45;
+    lightHour = 11;
 
     /** @type {Workspace} */
     workspace;
@@ -46,9 +48,22 @@ export default class Core {
     /** @type {Tool} */
     tool = new Tool();
     /** @type {ChunkSystem} */
-    chunkSystem
+    chunkSystem;
     /** @type {Fog} */
     fog;
+    /** @type {ModelsLoader} */
+    models;
+
+    /** @type {THREE.DirectionalLight} */
+    light;
+    /** @type {THREE.AmbientLight} */
+    light2;
+    /** @type {THREE.CameraHelper} */
+    shadowHelper;
+
+    /** @type {LightControl} */
+    lightControl;
+
 
     /** @type {BlockDraw|InstancedDraw} */
     blockDraw;
@@ -62,6 +77,11 @@ export default class Core {
 
     workGrid;
 
+    /** @type {[Character]} */
+    characterList = [];
+    /** @type {Character} */
+    playerModel;
+
 
     constructor(size, x, y, z, planeOrGrid = true, backgrounColor = 0xd0d0d0) {
         if (Core.instance)
@@ -72,8 +92,8 @@ export default class Core {
         this.clock = new THREE.Clock(true);
         this.blocks = Blocks.getInstance();
 
-
         this.initThreeJS();
+        this.loadModels();
         this.initCamera(x, y, z);
 
         if (Conf.INSTANCED_MESH_OPTIMIZATION)
@@ -95,12 +115,39 @@ export default class Core {
         return Core.instance;
     }
 
+    async loadModels() {
+        this.models = ModelsLoader.getInstance();
+        await this.models.loadAll();
+
+        await this.models.wait('player');
+
+        this.playerModel = await Character.create('player');
+        this.characterList.push(this.playerModel);
+
+        /** @type {THREE.Object3D} */
+        const obj = this.playerModel.getObject3D();
+        this.scene.add(obj);
+
+        // fix the scale and center
+        const scale = 1.85/3.6;
+        this.playerModel.scale = 1.85/3.6;
+        obj.scale.set(scale, scale, scale);
+
+        this.playerModel.center.y = 0.4;
+        obj.position.x = this.playerModel.center.x;
+        obj.position.y = this.playerModel.center.y;
+        obj.position.z = this.playerModel.center.z;
+
+        this.lightControl.light.target = this.playerModel.obj;
+    }
+
     initThreeJS() {
         this.scene = new THREE.Scene();
         this.renderer = initRenderer(this.backgrounColor);
-        /** @type {THREE.HemisphereLight}  */
-        this.light = initDefaultBasicLight(this.scene);
 
+        this.lightControl = new LightControl(this.scene);
+
+        //this.initLight();
         // let degree = 0;
         // setInterval(() => {
         //     degree = (degree + 5) % 360;
@@ -110,19 +157,13 @@ export default class Core {
         //     this.light.position.set(x, y, 0);
         //     console.log (degree);
         // }, 100);
-
-        this.setLightAngle(65);
     }
 
-    setLightAngle(angle, mapSize = 256) {
-        const rad = THREE.MathUtils.degToRad(angle);
-        const zRad = THREE.MathUtils.degToRad(45);
-        this.light.position.set(Math.cos(rad) * mapSize, Math.sin(rad) * mapSize, Math.cos(zRad) * mapSize);
-        this.lightAngle = angle % 360
+    setHour(hour) {
+        this.lightHour = Math.abs(hour % 24);
     }
-
-    getLightAngle() {
-        return this.lightAngle;
+    getHour() {
+        return this.lightHour;
     }
 
     initCamera(x, y, z) {
@@ -205,4 +246,16 @@ export default class Core {
         hudContext.drawImage(crosshair, (width / 2) - (crosshair.scale.x * 15 / 2), (height / 2) - (crosshair.scale.y * 15 / 2));
     }
 
+
+    angleCameraPlayer() {
+        const camPos = this.camera.position;
+        const playerPos = this.playerModel.obj.position;
+        const playerToCam = new THREE.Vector3();
+        playerToCam.subVectors(camPos, playerPos);
+
+        const angle = Math.atan2(playerToCam.x, playerToCam.z);
+        const deg = angle * 180 / Math.PI;
+
+        return { deg, rad: angle };
+    }
 }

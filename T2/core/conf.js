@@ -4,16 +4,22 @@ const Conf = {
     CUBE_SIZE: CUBE_SIZE,
     CUBE_ADD_Y: CUBE_SIZE / 2,
 
-    DEFAULT_SIZE: 256,
+    DEFAULT_SIZE: 200,
     DEFAULT_BUILDER_SIZE: 10,
 
     ASSETS_PATH: 'assets/',
     BLOCKMODELS_PATH: 'assets/blockmodel/',
 
     CHUNK_SIZE: 8,
-    DEFAULT_CHUNK_COUNT: 7,
+    DEFAULT_CHUNK_COUNT: 5,
 
-    INSTANCED_MESH_OPTIMIZATION: true
+    INSTANCED_MESH_OPTIMIZATION: true,
+
+    FOG: true,
+    LIGHT_AUTOUPDATE: true,
+    LIGHT_REFRESH_INTERVAL: 2000,
+    LIGH_SHADOW_MAP_SIZE: 1024,
+    LIGHT_DISTANCE: 50
 };
 
 export default Conf;

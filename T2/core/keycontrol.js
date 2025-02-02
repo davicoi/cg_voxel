@@ -1,9 +1,9 @@
-import Workspace from './workspace.js';
 import KeyboardState from '../../libs/util/KeyboardState.js';
 import BuilderMouseMove from '../builder/buildermousemove.js';
 import NavigateBlock from '../builder/navigateblock.js';
-import Blocks from './blocks.js';
 import Core from './core.js';
+import { toggleMenu } from './menu.js';
+
 
 /** @type {KeyboardState} */
 let keyboard;
@@ -25,7 +25,7 @@ let jumpActive = false;
  * @param {NavigateBlock} _navigate 
  * @param {BuilderMouseMove} _mouseMove 
  */
-export function init(_navigate, _mouseMove, callbackToggleBox) {
+function init(_navigate, _mouseMove, callbackToggleBox) {
     core = Core.getInstance();
     keyboard = core.keyboard;
     navigate = _navigate;
@@ -33,20 +33,20 @@ export function init(_navigate, _mouseMove, callbackToggleBox) {
     funcToggle = callbackToggleBox;
 }
 
-export function getKeyboardState() {
+function getKeyboardState() {
     return keyboard;
 }
 
-export function keyboardUpdate() {
+function keyboardUpdate() {
     keyboard.update();
 
     
-    if ( keyboard.down("left") )        navigate.addPos(-1, 0, 0);
-    if ( keyboard.down("right") )       navigate.addPos( 1, 0, 0);
-    if ( keyboard.down("up") )          navigate.addPos(0, 0, -1);
-    if ( keyboard.down("down") )        navigate.addPos(0, 0,    1);
-    if ( keyboard.down("pageup") )      navigate.addPos(0,    1, 0);
-    if ( keyboard.down("pagedown") )    navigate.addPos(0, -1, 0);
+    // if ( keyboard.down("left") )        navigate.addPos(-1, 0, 0);
+    // if ( keyboard.down("right") )       navigate.addPos( 1, 0, 0);
+    // if ( keyboard.down("up") )          navigate.addPos(0, 0, -1);
+    // if ( keyboard.down("down") )        navigate.addPos(0, 0,    1);
+    // if ( keyboard.down("pageup") )      navigate.addPos(0,    1, 0);
+    // if ( keyboard.down("pagedown") )    navigate.addPos(0, -1, 0);
 
     if ( keyboard.down(",") )           core.tool.dec();
     if ( keyboard.down(".") )           core.tool.inc();
@@ -57,11 +57,22 @@ export function keyboardUpdate() {
     if ( keyboard.down("space") )       jumpActive = true;
     if ( keyboard.up("space") )         jumpActive = false;
 
+    if ( keyboard.down("H") )           core.lightControl.toggleHelper();
+    if ( keyboard.down("M") )           toggleMenu();
+
+
 
     if ( keyboard.down("delete") ) {
         const pos = mouseMove.getLastBlockPos();
         if (pos)
             core.workspace.set(0, pos);
+    }
+
+    if (keyboard.down("F") ) {
+        if((window.fullScreen) || (window.innerWidth == screen.width && window.innerHeight == screen.height))
+            document.exitFullscreen();
+        else
+            document.getElementsByTagName('canvas')[0].requestFullscreen();
     }
 
     if (funcToggle && keyboard.down("T"))
@@ -72,13 +83,18 @@ export function keyboardUpdate() {
         core.camControl.toggle();
     }
 
-    if (jumpActive)
-        core.camControl.jump();
+    if (jumpActive && core.playerModel)
+        core.playerModel.jump();
+}
+
+function setJump(active) {
+    jumpActive = active;
 }
 
 
 export default {
     init,
     getKeyboardState,
-    keyboardUpdate
+    keyboardUpdate,
+    setJump
 }

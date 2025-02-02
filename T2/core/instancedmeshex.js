@@ -35,6 +35,9 @@ export default class InstancedMeshEx {
      */
     addMesh() {
         const mesh = new THREE.InstancedMesh(this.geometry, this.material, INSTANCE_COUNT);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
         mesh.count = 0;
         this.meshList.push(mesh);
         this.refList.push([]);

@@ -6,6 +6,7 @@ import Conf from './conf.js';
 import OrbitCtl from './orbit.js';
 import FirstPersonCtl from './firstperson.js';
 import Cursor from './cursor.js';
+import Position from './position.js';
 
 export default class CameraControls {
     /** @type {OrbitCtl|FirstPersonCtl} */
@@ -18,10 +19,6 @@ export default class CameraControls {
     cursor;
     
     speed = 5;
-    gravityActive = true;
-    gravitySpeed = 7.5;
-    gravityCurrentSpeed = 0;
-    gravity = 20;
     
     /** @type {THREE.WebGLRenderer} */
     renderer;
@@ -85,7 +82,6 @@ export default class CameraControls {
         if (!this.active)
             return;
 
-        this.updateGravity(delta);
         this.active.update(delta, this.speed);
     }
 
@@ -136,54 +132,6 @@ export default class CameraControls {
 
     centralize() {
         this.active.center();
-    }
-
-    enableGravity(enable) {
-        if (enable) {
-            this.gravityCurrentSpeed = 0;
-            this.gravityActive = true;
-        } else {
-            this.gravityCurrentSpeed = 0;
-            this.gravityActive = false;
-        }
-    }
-
-    jump() {
-        if (this.gravityCurrentSpeed == 0)
-            this.gravityCurrentSpeed = this.gravitySpeed;
-    }
-
-    updateGravity(delta) {
-        if (!this.gravityActive || !this.isFirstPerson())
-            return;
-
-        const camAddY = Conf.CUBE_SIZE / 3 * 2;
-
-        //const pos = this.camToPosition();
-        const pos = this.active.getPosition();
-        while (this.core.mapData.get(pos) > 0) {
-            pos.y++;
-            this.camera.position.y += Conf.CUBE_SIZE;
-        }
-        pos.y--;
-
-        // minimum height at which the player can stand
-        const isGround = this.core.mapData.get(pos) > 0;
-        let minY = !isGround ? camAddY : (pos.y + 1) * Conf.CUBE_SIZE + camAddY;
-
-        // gravity
-        let y = this.camera.position.y;
-        y += this.gravityCurrentSpeed * delta;
-        this.gravityCurrentSpeed -= this.gravity * delta;
-
-        // can't stay below the block
-        if (y < minY) {    
-            y = minY;
-            this.gravityCurrentSpeed = 0;
-            this.camera.position.y = minY;
-            return;
-        }
-        this.camera.position.y = y;
     }
 
     getPlanePosition() {

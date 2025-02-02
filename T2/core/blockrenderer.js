@@ -173,6 +173,9 @@ export default class BlockRenderer {
             this.updateChunk(true);
             this.redraw();
         }
+        this.core.lightControl.updateArea();
+        if (this.core.fog)
+            this.core.fog.updateDistance();
     }
 
     isChunkActive() {

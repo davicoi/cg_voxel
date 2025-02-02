@@ -24,6 +24,8 @@ const blockList = [
     '#555555',  //  9 ground 4
     '#676767',  // 10 ground 5
     '#D68130',  // 11 ground 6
+    '#ba6f29',  // 12 ground 7
+    '#945821',  // 13 ground 7
 ];
 
 // instance of Blocks
@@ -85,6 +87,7 @@ export default class Blocks {
 
         if (!this.cache[sides & 0x3F])
             this.cache[sides & 0x3F] = new BoxGeometry(Conf.CUBE_SIZE, Conf.CUBE_SIZE, Conf.CUBE_SIZE, sides);
+        return this.cache[sides & 0x3F];
     }
 
     /** Create default materials */
@@ -117,6 +120,8 @@ export default class Blocks {
         const material = materialList.get(`b${parseInt(id)}`);
         const cube = this.getCube(sides)
         const mesh = new THREE.Mesh(cube, material);
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
         return mesh;
     }
 

@@ -1,5 +1,4 @@
 import * as THREE from  'three';
-import { setDefaultMaterial } from "../../libs/util/util.js";
 
 let materialsInst = null;
 
@@ -41,7 +40,7 @@ export default class MaterialList {
         if (!name)
             name = String.toString(color || tex);
 
-        const mat = setDefaultMaterial(color, tex);
+        const mat = new THREE.MeshLambertMaterial({ color: color, map: tex });
         this.add(name, mat);
         return mat;
     }

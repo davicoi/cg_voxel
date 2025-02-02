@@ -1,6 +1,7 @@
 import Conf from './conf.js';
 import Chunk from './chunk.js'
 import Core from './core.js';
+import LightControl from './lightcontrol.js';
 
 export default class ChunkSystem {
     static instance = null;
@@ -60,6 +61,8 @@ export default class ChunkSystem {
         const core = Core.getInstance();
         if (core && core.fog)
             core.fog.updateDistance();
+
+        LightControl.getInstance().updateArea();
     }
 
     getChunkCount() {

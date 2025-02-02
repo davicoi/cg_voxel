@@ -15,6 +15,10 @@ export default class Position {
         this.set(x, y, z);
     }
 
+    static createFromArray(ar) {
+        return new Position(ar.x, ar.y, ar.z);
+    }
+
     set(x, y, z) {
         this.x = Math.round(x);
         this.y = Math.round(y);

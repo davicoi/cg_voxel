@@ -3,6 +3,9 @@ import GUI from '../../libs/util/dat.gui.module.js'
 import Conf from "./conf.js";
 import MapGenerator from "./mapgenerator.js";
 
+let gui_visible = true;
+let gui;
+
 export function createMenu() {
     const core = Core.getInstance();
 
@@ -12,7 +15,9 @@ export function createMenu() {
         'chunkSystem': core.chunkSystem.isEnabled(),
         'distance': core.chunkSystem.getChunkCount(),
         'useFog': core.fog.isEnabled(),
-        'lightAngle': core.getLightAngle(),
+        'lightAutoUpdate': core.light.shadow.autoUpdate,
+        'hour': core.getHour(),
+        'shadowSize': core.lightControl.getShadowMapSize(),
 
         'randomSeed': true,
         'seed': 0,
@@ -20,7 +25,7 @@ export function createMenu() {
     };
 
 
-    const gui = new GUI();
+    gui = new GUI({hideable: false});
     const optFolder = gui.addFolder('Optimizations');
 
     // optimize
@@ -51,13 +56,14 @@ export function createMenu() {
             core.blockRender.redraw();
     });
     
-    optFolder.add(settings, 'distance', 2, 50, 1).name('Distance').onChange((value) => {
+    optFolder.add(settings, 'distance', 2, 25, 1).name('Distance').onChange((value) => {
         value = parseInt(value);
         const redraw = core.blockRender.chunkCount != value;
         core.chunkSystem.setChunkCount(value);;
         if (redraw) {
             core.blockRender.redraw();
             core.fog.enable(true);
+            core.lightControl.updateArea();
         }
     });
 
@@ -66,10 +72,27 @@ export function createMenu() {
         core.fog.enableFogSystem(value);
     });
     
-    optFolder.add(settings, 'lightAngle', 0, 359, 5).name('Light Angle').onChange((value) => {
-        console.log (core.getLightAngle());
-        core.setLightAngle(value);
+    // light auto update
+    optFolder.add(settings, 'lightAutoUpdate').name('Light Auto Update').onChange(function (value) {
+        core.lightControl.setAutoUpdate(value);
     });
+    
+    optFolder.add(settings, 'hour', 0, 24, 0.1).name('Hour (light)').onChange((value) => {
+        core.setHour(value);
+    });
+
+
+    
+    // Variável para armazenar a seleção atual
+    
+    // Adicionar o dropdown ao GUI
+    var shadowSizeList = [256, 512, 1024, 2048, 4096];
+    optFolder.add(settings, 'shadowSize', shadowSizeList).name('Shadow Map Size').onChange(function (value) {
+        core.lightControl.setShadowMapSize(value);
+    });
+
+
+
 
     // random
     const mapFolder = gui.addFolder('Map');
@@ -87,7 +110,10 @@ export function createMenu() {
         core.workspace.newModel(parseInt(settings.mapSize));
         // MapGenerator.createByPerc(core.workspace.getModelData(), 16, settings.seed);
 //        const ids = [8, 9, 10, 11, 2, 1, 1, 1, 1, 1, 7, 7];
-        const ids = [8, 9, 2, 2, 1, 1, 1, 7, 7];
+//        const ids = [8, 9, 2, 2, 1, 1, 1, 7, 7];
+        //const ids = [8, 8, 8, 9, 9, 9, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
+        //const ids = [8, 8, 8, 9, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
+        const ids = [8, 8, 8, 9, 9, 13, 12, 12, 2, 2, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
         MapGenerator.createByAlt(core.workspace.getModelData(), 30, ids.length, ids, settings.seed);
         
         core.workspace.redraw();
@@ -97,4 +123,12 @@ export function createMenu() {
     
     optFolder.open();
     mapFolder.open();
+}
+
+export function toggleMenu() {
+    gui_visible = !gui_visible;
+    if (gui_visible)
+        gui.show();
+    else
+        gui.hide();
 }

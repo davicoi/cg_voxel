@@ -20,7 +20,7 @@ const conf = {
         seed: 128
     }
 }
-canvas1 = {
+const canvas1 = {
     gridSize: 256,
     valueRange: 256,
     smooth: 0.5,

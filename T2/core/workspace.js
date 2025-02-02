@@ -110,6 +110,7 @@ export default class Workspace {
             this.workGrid.setGridSize(this.gridSize);
         }
 
+        this.centerPlayer();
         this.redraw();
 
         if (this.funcOnLoad)
@@ -153,5 +154,21 @@ export default class Workspace {
     redraw() {
         if (this.blockRender)
             this.blockRender.redraw();
+        const core = Core.getInstance();
+        core.lightControl.updateArea();
+    }
+
+    centerPlayer() {
+        const core = Core.getInstance();
+
+        const size = this.modelData.getSize();
+        const centerX = parseInt(size / 2);
+        const centerZ = parseInt(size / 2);
+        const centerY = this.modelData.firstEmptyFrom(centerX, centerZ);
+    
+        //core.camControl.setPosition(centerX, centerY + Conf.CUBE_SIZE * 2, centerZ);
+        if (core.playerModel)
+            core.playerModel.getObject3D().position.set(centerX, centerY, centerZ);
+
     }
 }
