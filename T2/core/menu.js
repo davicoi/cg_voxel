@@ -18,6 +18,7 @@ export function createMenu() {
         'lightAutoUpdate': core.light.shadow.autoUpdate,
         'hour': core.getHour(),
         'shadowSize': core.lightControl.getShadowMapSize(),
+        'sensivity': Conf.MOUSE_SENSIVITY,
 
         'randomSeed': true,
         'seed': 0,
@@ -91,6 +92,9 @@ export function createMenu() {
         core.lightControl.setShadowMapSize(value);
     });
 
+    optFolder.add(settings, 'sensivity', 0.1, 10, 0.1).name('Sensivity').onChange((value) => {
+        core.camControl.firstPerson.sensivity = value;
+    });
 
 
 

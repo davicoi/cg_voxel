@@ -46,7 +46,7 @@ export default class FirstPersonCtl {
     hangle = 270;
     vangle = 30;
     dist = 7;
-    sensivity = 0.1;
+    sensivity = Conf.MOUSE_SENSIVITY;
     yDirMult = 1;
 
     constructor(x, y, z) {

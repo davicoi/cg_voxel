@@ -106,13 +106,20 @@ window.addEventListener("mouseup", event => {
 });
 
 
+let oldScreenX = 0;
+let oldScreenY = 0;
 function mouseMoveEvent(event) {
     if (!core.camControl.isFirstPerson())
         return;
 
     const deltaX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
 	const deltaY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+    // const deltaX = event.screenX - oldScreenX;
+    // const deltaY = event.screenY - oldScreenY;
+    // oldScreenX = event.screenX;
+    // oldScreenY = event.screenY;
     core.camControl.firstPerson.onMouseMove(deltaX, deltaY);
+    
     // console.log(`Delta X/Y: ${deltaX}, ${deltaY}<br/>Client X/Y: ${event.clientX}, ${event.clientY}`);
 }
 

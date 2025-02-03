@@ -19,7 +19,9 @@ const Conf = {
     LIGHT_AUTOUPDATE: true,
     LIGHT_REFRESH_INTERVAL: 2000,
     LIGH_SHADOW_MAP_SIZE: 1024,
-    LIGHT_DISTANCE: 50
+    LIGHT_DISTANCE: 50,
+
+    MOUSE_SENSIVITY: 0.1
 };
 
 export default Conf;
