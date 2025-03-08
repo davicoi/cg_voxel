@@ -4,6 +4,8 @@ import Conf from './conf.js';
 import Core from './core.js';
 import Position from './position.js';
 import CamCollision from './camcollision.js';
+import Gravity from './gravity.js';
+import BlockCollision from './blockcollision.js';
 
 // https://codepen.io/Fyrestar/pen/zYqjNOL
 
@@ -27,10 +29,11 @@ import CamCollision from './camcollision.js';
 
 export default class FirstPersonCtl {
     _enable = false;
-    // moveForward = false;
-    // moveBackward = false;
-    // moveLeft = false;
-    // moveRight = false;
+    moveForward = false;
+    moveBackward = false;
+    moveLeft = false;
+    moveRight = false;
+    headPosY = 1.78;
 
     /** @type {PointerLockControls} */
     firstPerson;
@@ -42,6 +45,8 @@ export default class FirstPersonCtl {
 
     /** @type {CamCollision} */
     camCollision;
+    /** @type {Gravity} */
+    gravity;
 
     hangle = 270;
     vangle = 30;
@@ -55,6 +60,8 @@ export default class FirstPersonCtl {
         this.camCollision = new CamCollision();
 
         this.init(x, y, z);
+
+        this.gravity = new Gravity(this.core.camera, this.headPosY);
     }
 
     init(x, y, z) {
@@ -64,13 +71,10 @@ export default class FirstPersonCtl {
 
         // show/hide "game cursor"
         this.firstPerson.addEventListener('lock', () => {
-            if (this.core.camControl.cursor)
-                // this.core.camControl.cursor.show(true);
-                this.core.camControl.cursor.show(false);
+            this.core.camControl.showCursor(true);
         });
         this.firstPerson.addEventListener('unlock', () => {
-            if (this.core.camControl.cursor)
-                this.core.camControl.cursor.show(false);
+            this.core.camControl.showCursor(false);
         });
 
         return this.firstPerson;
@@ -107,8 +111,12 @@ export default class FirstPersonCtl {
 
     // center position used by the chunk system
     cam2Pos(x, y, z) {
-        const p = this.core.playerModel.obj.position;
-        return new Position(p.x, p.y, p.z);
+        if (x === undefined) {
+            x = this.core.camera.position.x;
+            y = this.core.camera.position.y;
+            z = this.core.camera.position.z;
+        }
+        return new Position(x, y - this.headPosY, z);
     }
 
     getRealPos() {
@@ -137,43 +145,25 @@ export default class FirstPersonCtl {
 
         this.oldPos.copy(this.core.camera.position);
 
-        // if (this.moveForward)           this.firstPerson.moveForward(speed * delta);
-        // else if (this.moveBackward)     this.firstPerson.moveForward(speed * -1 * delta);
+        const obj = this.core.camera;
+        let oldX = obj.position.x;
+        let oldZ = obj.position.z;
+
+
+        if (this.moveForward)           this.firstPerson.moveForward(speed * delta);
+        else if (this.moveBackward)     this.firstPerson.moveForward(speed * -1 * delta);
     
-        // if (this.moveRight)             this.firstPerson.moveRight(speed * delta);
-        // else if (this.moveLeft)         this.firstPerson.moveRight(speed * -1 * delta);
+        if (this.moveRight)             this.firstPerson.moveRight(speed * delta);
+        else if (this.moveLeft)         this.firstPerson.moveRight(speed * -1 * delta);
 
-        if (!this.core.playerModel?.loaded())
-            return;
-        const obj = this.core.playerModel.getObject3D();
 
-        const hrad = this.hangle * Math.PI / 180;
-        const vrad = this.vangle * Math.PI / 180;
+        // collision
+        let y = Math.round(obj.position.y - this.headPosY);
+        if (BlockCollision.checkBlockCollision(obj.position.x, y, obj.position.z))
+            obj.position.set(oldX, obj.position.y, oldZ);
 
-        // vertical camera position
-        const y = obj.position.y + Math.sin(vrad) * this.dist;
-        const hdist = Math.cos(vrad) * this.dist;
-
-        // horitonzal camera position
-        const x = obj.position.x + Math.cos(hrad) * hdist;
-        const z = obj.position.z + Math.sin(hrad) * hdist;
-
-        // adjusts position to a fixed distance from the player
-        const newPos = new THREE.Vector3(x, y, z);
-        const dir = new THREE.Vector3();
-        dir.subVectors(newPos, obj.position)
-            .normalize()
-            .multiplyScalar(this.dist)
-            .add(obj.position);
-
-        // camera cannot be below the ground
-        const camPos = new Position(dir.x, dir.y, dir.z);
-        const minY = this.core.mapData.firstEmptyFrom(camPos.x, camPos.z) + 0.3;
-        if (dir.y < minY)
-            dir.y = minY;
-
-        this.core.camera.position.copy(dir);
-        this.core.camera.lookAt(obj.position);
+        //this.updateGravity(delta);
+        this.gravity.updateGravity(delta);
     }
 
     updateKeys(keyboard, delta) {
@@ -183,13 +173,21 @@ export default class FirstPersonCtl {
         if (keyboard.down('Y'))
             this.yDirMult = this.yDirMult == 1 ? -1 : 1;
 
-        // const keyList = [['J', 'moveLeft'], ['L', 'moveRight'], ['I', 'moveForward'], ['K', 'moveBackward']];
-        // keyList.forEach(([key, varName]) => {
-        //     if (keyboard.down(key))
-        //         this[varName] = true;
-        //     else if (keyboard.up(key))
-        //         this[varName] = false;
-        // });
+        const keyList = [
+            ['A', 'moveLeft'], ['D', 'moveRight'], ['W', 'moveForward'], ['S', 'moveBackward'],
+            ['left', 'moveLeft'], ['right', 'moveRight'], ['up', 'moveForward'], ['down', 'moveBackward'],
+            ['']
+        ];
+        keyList.forEach(([key, varName]) => {
+            if (keyboard.down(key))
+                this[varName] = true;
+            else if (keyboard.up(key))
+                this[varName] = false;
+        });
+    }
+
+    jump() {
+        this.gravity.jump();
     }
 
     lock() {
@@ -209,7 +207,7 @@ export default class FirstPersonCtl {
      * @param {MouseEvent} event 
      */
     onMouseMove(deltaX, deltaY) {
-        if (this.onlyLockedMov && !this.core.camControl.isLocked())
+/*        if (this.onlyLockedMov && !this.core.camControl.isLocked())
             return;
 
         if (!this._enable)
@@ -223,7 +221,7 @@ export default class FirstPersonCtl {
         if (this.vangle < -89)
             this.vangle = -89;
         else if (this.vangle > 89)
-            this.vangle = 89;
+            this.vangle = 89;*/
     }
 
     addDistance(dist) {

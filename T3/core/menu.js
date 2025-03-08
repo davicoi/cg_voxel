@@ -122,7 +122,7 @@ export function createMenu() {
 //        const ids = [8, 9, 2, 2, 1, 1, 1, 7, 7];
         //const ids = [8, 8, 8, 9, 9, 9, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
         //const ids = [8, 8, 8, 9, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
-        const ids = [8, 8, 8, 9, 9, 13, 12, 12, 2, 2, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
+        const ids = [13, 12, 12, 11, 11, 10, 10, 9, 9, 9, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
         MapGenerator.createByAlt(core.workspace.getModelData(), 30, ids.length, ids, settings.seed);
         
         core.workspace.redraw();
