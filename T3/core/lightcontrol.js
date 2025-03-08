@@ -11,7 +11,7 @@ export default class LightControl {
     /** @type {THREE.AmbientLight} */
     light2;
     /** @type {THREE.CameraHelper} */
-    shadowHelper;
+    shadowHelper = null;
     helperVisible = false;
 
     /** @type {number} */
@@ -52,10 +52,6 @@ export default class LightControl {
 
         scene.add(dirLight);
         scene.add(dirLight.target);
-
-        // helper
-        this.shadowHelper = new THREE.CameraHelper(dirLight.shadow.camera);
-        scene.add(this.shadowHelper);
 
         // light 2
         this.light2 = new THREE.AmbientLight(0x909090, 0.8);

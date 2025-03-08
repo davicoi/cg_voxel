@@ -40,6 +40,7 @@ export default class InstancedDraw {
         //const material = this.materialList.get(`b${type}`);
         const material = this.materialList.get(`blocks`);
         
+        /** */
         const mesh = new InstancedMeshEx(geometry, material, this.scene, type);
         mesh.castShadow = true;
         mesh.receiveShadow = true;

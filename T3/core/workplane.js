@@ -39,6 +39,15 @@ export default class WorkPlane {
         this.workspace = workspace;
     }
 
+    show(status) {
+        if (this.grid)
+            this.grid.visible = status;
+        if(this.axisHelper)
+            this.axisHelper.visible = status;
+        if(this.centralPlane)
+            this.centralPlane.visible = status;
+    }
+
     setGridSize(size) {
         this.gridSize = size;
         this.addPos = size % Conf.CUBE_SIZE != 0 ? 0 : Conf.CUBE_SIZE / 2;

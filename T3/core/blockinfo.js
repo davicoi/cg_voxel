@@ -97,7 +97,6 @@ function updateSolidBlocksList() {
     for (let i = 0; i < blockList.length; i++) {
         solidBlocks.push(!blockList[i].transparent);
     }
-    console.log (solidBlocks);
 }
 
 function getSolidBlocksStatus() {

@@ -15,7 +15,12 @@ import { createMenu } from './core/menu.js';
 /**
  * init Builder
  */
-const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, true, 0xc0c0c0);
+const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, {
+    planeOrGrid: true,
+    backgrounColor: 0xc0c0c0,
+    loadModels: true,
+    instanced_mesh_optimization: Conf.INSTANCED_MESH_OPTIMIZATION
+});
 
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
 core.camControl.initCursor();
@@ -201,7 +206,6 @@ function render()
 
 async function main() {
     await core.blockModels.loadAll();
-
     core.blockRender.setOptimizeBlocks(true);
     core.blockRender.setOptimizeSides(true);
     core.chunkSystem.setEnable(true);

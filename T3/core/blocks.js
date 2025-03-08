@@ -78,7 +78,8 @@ export default class Blocks {
 
     cacheName(sides, blockId) {
         sides &= Blocks.ALL_SIDES;
-        return `b${blockId << 6 + sides}`;
+        const cid = (blockId << 6) + sides;
+        return `b${cid}`;
     }
 
     createCube(sides = 0x3F, blockId = 0) {
@@ -133,8 +134,9 @@ export default class Blocks {
             return null;
 
         const materialList = MaterialList.getInstance();
-        const material = materialList.get(`b${parseInt(id)}`);
-        const cube = this.getCube(sides)
+        //const material = materialList.get(`b${parseInt(id)}`);
+        const material = materialList.get(`blocks`);
+        const cube = this.getCube(sides, id)
         const mesh = new THREE.Mesh(cube, material);
         mesh.receiveShadow = true;
         mesh.castShadow = true;

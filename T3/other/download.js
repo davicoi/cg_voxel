@@ -29,3 +29,18 @@ export function downloadAsciiData(filename, str) {
     link.click();
     URL.revokeObjectURL(url);
 }
+
+/** force download of memory data as string */
+export function downloadBinaryData(filename, str) {
+    const blob = new Blob([str], { type: 'application/octet-stream' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    // filename
+    link.href = url;
+    link.download = filename;
+
+    link.click();
+    URL.revokeObjectURL(url);
+}

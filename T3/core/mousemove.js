@@ -3,7 +3,6 @@ import Position from './position.js';
 import CoordConverter from './coordconverter.js';
 import BlockRenderer from './blockrenderer.js';
 import PreviewBlock from './previewblock.js';
-import SelectedBlock from './selectedblock.js';
 import Workspace from './workspace.js';
 import Core from './core.js';
 
@@ -20,7 +19,7 @@ export default class MouseMove {
     mouse;
     /** @type {THREE.Camera} */
     camera;
-    /** @type {PreviewBlock|SelectedBlock} */
+    /** @type {PreviewBlock} */
     navigator;
     /** @type {BlockRenderer} */
     blockRender;
@@ -36,7 +35,7 @@ export default class MouseMove {
     /**
      * Constructor
      * @param {THREE.Camera} camera
-     * @param {PreviewBlock|SelectedBlock} navigator
+     * @param {PreviewBlock} navigator
      * @param {BlockRenderer} blockRender
      */
     constructor(camera, navigator, blockRender) {

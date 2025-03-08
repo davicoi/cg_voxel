@@ -1,4 +1,5 @@
 import * as THREE from '../../build/three.module.js';
+import { getSolidBlocksStatus } from './blockinfo.js';
 
 const INSTANCE_COUNT = 100;
 
@@ -34,9 +35,14 @@ export default class InstancedMeshEx {
      * @returns {THREE.InstancedMesh}
      */
     addMesh() {
+        const solidBlocks = getSolidBlocksStatus();
+
         const mesh = new THREE.InstancedMesh(this.geometry, this.material, INSTANCE_COUNT);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+
+        if (!solidBlocks[this.blockId])
+            mesh.renderOrder = 50;
 
         mesh.count = 0;
         this.meshList.push(mesh);

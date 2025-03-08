@@ -1,8 +1,9 @@
 import GUI from '../../libs/util/dat.gui.module.js'
 import Core from '../core/core.js';
 import Workspace from '../core/workspace.js';
-import { downloadJsonData } from '../other/download.js';
+import { downloadBinaryData } from '../other/download.js';
 import BuilderMouseMove from './buildermousemove.js';
+import { GLTFExporter } from '../../build/jsm/exporters/GLTFExporter.js';
 
 
 export default class BuilderMenu {
@@ -74,6 +75,22 @@ export default class BuilderMenu {
                         console.error(err);
                     });
                 }
+            },
+
+            /** export model */
+            export: () => {
+                const exporter = new GLTFExporter();
+                const core = Core.getInstance();
+
+                core.workspace.workGrid.show(false);
+                const options = {
+                    binary: true,
+                    onlyVisible: true
+                };
+                exporter.parse(core.scene, (gltf) => {
+                    downloadBinaryData('model.glb', gltf);
+                    core.workspace.workGrid.show(true);
+                }, undefined, options);
             }
         }
 
@@ -92,6 +109,7 @@ export default class BuilderMenu {
 
         const folderModel = this.gui.addFolder('Model');
         folderModel.add(controls, 'save').name("<b>SAVE</b>");
+        folderModel.add(controls, 'export').name("<b>EXPORT (.GLB)</b>");
         folderModel.add(controls, 'load').name("<b>LOAD</b>");
         folderModel.open();
     }

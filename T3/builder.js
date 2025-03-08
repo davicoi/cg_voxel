@@ -11,7 +11,13 @@ import Tool from "./core/tool.js";
 /**
  * init ThreeJS
  */
-const core = new Core(Conf.DEFAULT_BUILDER_SIZE, 0, 25, 20, false);
+//const core = new Core(Conf.DEFAULT_BUILDER_SIZE, 0, 25, 20, {
+const core = new Core(26, 0, 25, 20, {
+    planeOrGrid: false,
+    backgrounColor: 0xd0d0d0,
+    loadModels: false,
+    instanced_mesh_optimization: false
+});
 core.blockRender.optimize(false);
 
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;

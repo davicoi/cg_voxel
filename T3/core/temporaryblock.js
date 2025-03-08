@@ -30,8 +30,11 @@ export default class TemporaryBlock {
         const materialList = MaterialList.getInstance();
 
         const geometry = blocks.getCube(Blocks.ALL_SIDES, tileId);
+        /** @type {THREE.MeshLambertMaterial} */
         const material = materialList.get(`blocks`).clone();
+        //material.orde
         const mesh = new THREE.Mesh(geometry, material);
+        mesh.renderOrder = 100;
         mesh.position.set(x, y, z);
         mesh.castShadow = false;
         mesh.receiveShadow = true;
@@ -53,8 +56,8 @@ export default class TemporaryBlock {
 
     update(delta) {
         this.fadeElapsed += delta;
-        if (delta < TemporaryBlock.fadeTimeout) {
-            this.mesh.material.opacity = 1 - this.fadeElapsed / TemporaryBlock.fadeTimeout;
+        if (this.fadeElapsed < TemporaryBlock.fadeTimeout) {
+            this.mesh.material.opacity = 1 - (this.fadeElapsed / TemporaryBlock.fadeTimeout);
 
         } else {
             clearInterval(this.interval);

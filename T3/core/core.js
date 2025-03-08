@@ -61,8 +61,6 @@ export default class Core {
     light;
     /** @type {THREE.AmbientLight} */
     light2;
-    /** @type {THREE.CameraHelper} */
-    shadowHelper;
 
     /** @type {LightControl} */
     lightControl;
@@ -85,13 +83,17 @@ export default class Core {
     /** @type {Character} */
     playerModel;
 
+    options = {};
 
-    constructor(size, x, y, z, planeOrGrid = true, backgrounColor = 0xd0d0d0) {
+
+    constructor(size, x, y, z, options = null) {
         if (Core.instance)
             throw new ReferenceError("ERROR: Only 1 instance of Core() is allowed.");
         Core.instance = this;
 
-        this.backgrounColor = backgrounColor;
+        this.options = this.formatOptions(options);
+
+        this.backgrounColor = this.options.backgroundColor;
         this.clock = new THREE.Clock(true);
         this.textures = Textures.getInstance();
         this.blocks = Blocks.getInstance();
@@ -99,14 +101,30 @@ export default class Core {
         this.tool = new Tool();
 
         this.initThreeJS();
-        this.loadModels();
+        if (this.options.loadModels)
+            this.loadModels();
         this.initCamera(x, y, z);
 
-        if (Conf.INSTANCED_MESH_OPTIMIZATION)
+        if (this.options.instanced_mesh_optimization)
             this.blockDraw = new InstancedDraw(this, this.scene);
         else
             this.blockDraw = new BlockDraw(this, this.scene);
-        this.initWorkspace(size, planeOrGrid);
+        this.initWorkspace(size, this.options.planeOrGrid);
+    }
+
+    formatOptions(options) {
+        options = options || {};
+        const opt = {
+            loadModels: options.loadModels !== undefined ? options.loadModels : true,
+            backgroundColor: options.backgroundColor !== undefined ? options.backgroundColor : 0xd0d0d0,
+            planeOrGrid: options.planeOrGrid !== undefined ? options.planeOrGrid : true,
+            instanced_mesh_optimization: options.instanced_mesh_optimization !== undefined ? options.instanced_mesh_optimization : Conf.INSTANCED_MESH_OPTIMIZATION
+        }
+        return opt;
+    }
+
+    getOptions() {
+        return this.options;
     }
 
     setModel(model) {
