@@ -55,7 +55,7 @@ let AR = {
 }
 initAR(AR, renderer, camera);
 setARStuff();
-createSourceChangerInterface('../assets/AR/kanjiScene.jpg', '../assets/AR/kanjiScene.mp4', 'image')
+createSourceChangerInterface('./assets/AR/kanjiScene.jpg', './assets/AR/kanjiScene.mp4', 'image')
 render();
 
 function render()
