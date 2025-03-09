@@ -4,7 +4,7 @@ const Conf = {
     CUBE_SIZE: CUBE_SIZE,
     CUBE_ADD_Y: CUBE_SIZE / 2,
 
-    DEFAULT_SIZE: 100,
+    DEFAULT_SIZE: 200,
     DEFAULT_BUILDER_SIZE: 10,
 
     ASSETS_PATH: 'assets/',
@@ -17,7 +17,7 @@ const Conf = {
 
     INSTANCED_MESH_OPTIMIZATION: true,
 
-    FOG: false,
+    FOG: true,
     LIGHT_AUTOUPDATE: false,
     LIGHT_REFRESH_INTERVAL: 2000,
     LIGH_SHADOW_MAP_SIZE: 1024,
