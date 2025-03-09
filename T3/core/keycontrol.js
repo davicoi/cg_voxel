@@ -4,6 +4,7 @@ import NavigateBlock from '../builder/navigateblock.js';
 import Core from './core.js';
 import { toggleMenu } from './menu.js';
 import TemporaryBlock from './temporaryblock.js';
+import AudioManager from './audio.js';
 
 
 /** @type {KeyboardState} */
@@ -28,6 +29,18 @@ function init(_navigate, _mouseMove, callbackToggleBox) {
     navigate = _navigate;
     mouseMove = _mouseMove;
     funcToggle = callbackToggleBox;
+
+    window.addEventListener('click', (event) => {
+        const pos = mouseMove.getLastBlockPos();
+        if (pos) {
+            const blockId = core.workspace.get(pos);
+            core.workspace.set(0, pos);
+
+            const tempBlock = new TemporaryBlock(pos.x, pos.y, pos.z, blockId, core.scene);
+            AudioManager.playEffect('break');
+        }
+    }, false);
+
 }
 
 function getKeyboardState() {
@@ -49,8 +62,7 @@ function keyboardUpdate() {
     if ( keyboard.down(",") )           core.tool.dec();
     if ( keyboard.down(".") )           core.tool.inc();
 
-    if ( keyboard.down("Q") )           core.workspace.set(core.tool.getActive(), navigate.getPos());
-    if ( keyboard.down("E") )           core.workspace.set(0, navigate.getPos());
+    if ( keyboard.down("E") )           core.workspace.set(core.tool.getActive(), navigate.getPos(true));
 
     if ( keyboard.down("space") )       jumpActive = true;
     if ( keyboard.up("space") )         jumpActive = false;
@@ -67,6 +79,7 @@ function keyboardUpdate() {
             core.workspace.set(0, pos);
 
             const tempBlock = new TemporaryBlock(pos.x, pos.y, pos.z, blockId, core.scene);
+            AudioManager.playEffect('break');
         }
     }
 
@@ -86,6 +99,10 @@ function keyboardUpdate() {
 
     if (keyboard.down("C") ) {
         core.camControl.toggle();
+    }
+
+    if (keyboard.down("Q")) {
+        AudioManager.toggle('music1');
     }
 
     if (jumpActive && core.playerModel) {

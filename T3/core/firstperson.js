@@ -164,6 +164,10 @@ export default class FirstPersonCtl {
 
         //this.updateGravity(delta);
         this.gravity.updateGravity(delta);
+
+        // FIXME: *******
+        if (this.core?.playerModel?.obj)
+            this.core?.playerModel?.obj.position.set(obj.position.x, obj.position.y - this.headPosY, obj.position.z);
     }
 
     updateKeys(keyboard, delta) {

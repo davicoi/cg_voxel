@@ -1,5 +1,6 @@
 import Perlin from "../other/perlin.js";
 import BlockModels from "./blockmodels.js";
+import Conf from "./conf.js";
 import ModelData from "./modeldata.js";
 import Position from "./position.js";
 
@@ -126,7 +127,7 @@ export default class MapGenerator {
         let modelName, r, pos;
         for (let i = 0 ; i < list.length ; i++) {
             const y = model.firstEmptyFrom(list[i].x, list[i].y);
-            if (y < 0)
+            if (y < 0 || y <= Conf.WATER_HEIGHT)
                 continue;
 
             r = Math.random() * treeCount | 0;
@@ -232,11 +233,43 @@ export default class MapGenerator {
         MapGenerator.addTrees(model, list);
     }
 
+    static randBound(size, modelSize, minCenterDist) {
+        let x = Math.round(Math.random() * (size/2 - minCenterDist - modelSize));
+        let y = Math.round(Math.random() * (size/2 - minCenterDist - modelSize));
+        if (Math.random() > 0.5)
+            x = size - x - modelSize;
+        if (Math.random() > 0.5)
+            y = size - y - modelSize;
 
-    static createByAlt(model, smooth = 50, alt = 5, ids, seed = null) {
+        return {x, y, endX: x + modelSize, endY: y + modelSize};
+    }
+
+    static avgHeight(map, size, bounds) {
+        let sum = 0;
+        for (let y = bounds.y ; y < bounds.endY ; y++) {
+            for (let x = bounds.x ; x < bounds.endX ; x++) {
+                sum += map[y * size + x];
+            }
+        }
+
+        return sum / ((bounds.endX - bounds.x) * (bounds.endY - bounds.y));
+    }
+
+    static planArea(map, size, height, bounds) {
+        const avgHeight = Math.round(MapGenerator.avgHeight(map, size, bounds));
+        for (let y = bounds.y ; y < bounds.endY ; y++) {
+            for (let x = bounds.x ; x < bounds.endX ; x++) {
+                map[y * size + x] = height;
+            }
+        }
+    }
+
+
+    static createByAlt(model, smooth = 50, alt = 5, ids, seed = null, includeRav = false) {
         const gridsize = model.getSize();
         const {map, dist} = MapGenerator.perlinArray(model, gridsize, smooth, seed);
 
+        // normalize
         let min = 0, max = dist.length - 1;
         for (; min < dist.length && dist[min] < 1 ; min++);
         for (; max >= 0 && dist[max] < 1 ; max--);
@@ -245,16 +278,35 @@ export default class MapGenerator {
         for (let i = 0 ; i < map.length ; i++)
             map[i] = (map[i] - min) / div | 0;
 
+        // rav build
+        let bounds = null;
+        if (includeRav) {
+            const bmodels = BlockModels.getInstance();
+            const ravModel = bmodels.get('rav');
+            const ravSize = ravModel.getSize();
 
+            bounds = MapGenerator.randBound(gridsize, ravSize + 4, 10);
+            const height = MapGenerator.avgHeight(map, gridsize, bounds);
+            MapGenerator.planArea(map, gridsize, height, bounds);
+
+            model.addModel(ravModel, new Position((bounds.x + bounds.endX)/2, height, (bounds.y + bounds.endY)/2));
+            console.log({bounds, map});
+        }
+
+
+        // update blocks
         const pos = new Position(0, 0, 0);
-        let val, idx = 0;
+        let idx = 0;
         for (pos.z = 0 ; pos.z < gridsize ; pos.z++) {
             for (pos.x = 0 ; pos.x < gridsize ; pos.x++) {
                 MapGenerator.setByHeightV2(model, pos, map[idx++], ids);
             }
         }
 
-        const list = MapGenerator.randomTrees(model);
+        let list = MapGenerator.randomTrees(model);
+        if (bounds)
+            list = list.filter(p => p.x <= bounds.x || p.x > bounds.endX || p.y < bounds.y || p.y > bounds.endY);
+
         MapGenerator.addTrees(model, list);;
     }
 }

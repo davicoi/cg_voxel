@@ -1,7 +1,7 @@
 import GUI from '../../libs/util/dat.gui.module.js'
 import Core from '../core/core.js';
 import Workspace from '../core/workspace.js';
-import { downloadBinaryData } from '../other/download.js';
+import { downloadBinaryData, downloadJsonData } from '../other/download.js';
 import BuilderMouseMove from './buildermousemove.js';
 import { GLTFExporter } from '../../build/jsm/exporters/GLTFExporter.js';
 

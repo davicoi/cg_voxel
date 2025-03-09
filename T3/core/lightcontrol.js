@@ -122,7 +122,9 @@ export default class LightControl {
             }
         }
 
-        Core.getInstance().models.setCastShadow(enable);
+        const core = Core.getInstance();
+        if (core.models)
+            core.models.setCastShadow(enable);
 
         return this.light.shadow.autoUpdate;
     }

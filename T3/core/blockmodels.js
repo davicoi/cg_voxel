@@ -2,25 +2,38 @@ import Conf from "./conf.js";
 import ModelData from "./modeldata.js";
 
 const modelsName = [
-    'tree1', 'tree2', 'tree3', 'tree4', 'tree5'
+    'tree1', 'tree2', 'tree3', 'tree4', 'tree5',
+    'rav'
 ];
 
-let instBlockModels = null;
-
 export default class BlockModels {
+    static instBlockModels = null;
     /** @type [{ModelData}] */
     modelList = [];
+    loadCount = 0;
+    pending = 0;
 
     constructor() {
-        if (instBlockModels)
+        if (BlockModels.instBlockModels)
             throw new ReferenceError("ERROR: Only 1 instance of Blocks() is allowed.");
-        instBlockModels = this;
+        BlockModels.instBlockModels = this;
     }
 
     static getInstance() {
-        if (!instBlockModels)
-            instBlockModels = new BlockModels();
-        return instBlockModels;
+        if (!BlockModels.instBlockModels)
+            BlockModels.instBlockModels = new BlockModels();
+        return BlockModels.instBlockModels;
+    }
+
+    loaded() {
+        return this.pending == 0;
+    }
+
+    loadStatus() {
+        return {
+            count: this.loadCount,
+            pending: this.pending
+        }
     }
 
     /** Loads all models */
@@ -52,6 +65,8 @@ export default class BlockModels {
     /** downloads a model */
     load(modelName) {
         const url = `${Conf.BLOCKMODELS_PATH}${modelName}.json`;
+        this.loadCount++;
+        this.pending++;
 
         return fetch(url)
         .then(resp => {
@@ -63,9 +78,10 @@ export default class BlockModels {
             return this.loadJSON(modelName, json);
 
         }).catch(err => {
-            //alert (`ERRO: Nao foi possivel carretar o arquivo "${modelName}.json".`);
             console.error(err);
             return null;
+        }).finally(() => {
+            this.pending--;
         });
     }
 

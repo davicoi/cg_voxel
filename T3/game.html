@@ -6,6 +6,54 @@
       <link rel="shortcut icon" href="../favicon.ico">
       <link rel="stylesheet" href="../html/resources/default.css">
       <meta name="viewport" content="width=device-width, initial-scale=1">  
+
+      <style>
+         #loadscreen {
+            padding: 0px;
+            margin: 0px;
+
+            margin: 0;
+            overflow: hidden;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+         }
+
+         #loadscreen div {
+            background-image: url('./assets/loading.jpg');
+            object-fit: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            width: 90%;
+            height: 90%;;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.9;
+         }
+
+         #startgame {
+            display: inline-block;
+            padding: 10px;
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+         }
+
+         #startgame:hover {
+            color: red;
+            border: 2px solid red;
+         }
+
+      </style>
    </head>
 
    <body>
@@ -17,6 +65,12 @@
 
       <div id="webgl-output">     
          <script type="module" src="./game.js"></script>
+      </div>
+
+      <div id="loadscreen">
+         <div>
+            <span id="startgame">CLICK TO START</span>
+         </div>
       </div>
    </body>
 </html>

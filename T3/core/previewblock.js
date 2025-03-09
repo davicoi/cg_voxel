@@ -10,6 +10,7 @@ export default class PreviewBlock {
     /** @type {[THREE.LineSegments]} */
     cube;               // selection cube
     blockPos;           // position of selection cube
+    addPos;
 
     /**
      * Constructor
@@ -48,9 +49,10 @@ export default class PreviewBlock {
     }
 
     /** Set selection block position */
-    setPos(x, y, z) {
+    setPos(x, y, z, addx, addy, addz) {
         const pos = new Position(x, y, z);
         this.blockPos = pos;
+        this.addPos = new Position(addx, addy, addz);
         this.cube.position.set(pos.x, pos.y + EXTRA_SIZE, pos.z);
 
         return true;
@@ -74,7 +76,7 @@ export default class PreviewBlock {
     }
 
     /** Get the selection block position */
-    getPos() {
-        return this.blockPos.clone();
+    getPos(getAddPos = false) {
+        return !getAddPos ? this.blockPos.clone() : this.addPos.clone();
     }
 }

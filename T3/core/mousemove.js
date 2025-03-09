@@ -149,7 +149,7 @@ export default class MouseMove {
 
         // create the block
         if (this.navigator) {
-            this.navigator.setPos(blockPos.x, blockPos.y, blockPos.z);
+            this.navigator.setPos(blockPos.x, blockPos.y, blockPos.z, blockPos.x+normal.x, blockPos.y+normal.y, blockPos.z+normal.z);
             if (!this.navigator.isVisible())
                 this.navigator.show(true);
         }

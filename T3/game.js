@@ -1,4 +1,4 @@
-import * as THREE from    '../../build/three.module.js';
+import * as THREE from    '../build/three.module.js';
 import Core from './core/core.js';
 import MouseMove from './core/mousemove.js';
 import KeyControl from './core/keycontrol.js'
@@ -8,6 +8,8 @@ import FloatingBox from './other/floatingbox.js';
 import Conf from './core/conf.js';
 import Tool from './core/tool.js';
 import { createMenu } from './core/menu.js';
+import Water from './core/water.js';
+import AudioManager from './core/audio.js';
 
 
 
@@ -19,7 +21,7 @@ const core = new Core(Conf.DEFAULT_SIZE, 0, 25, 35, {
     planeOrGrid: true,
     backgrounColor: 0xc0c0c0,
     loadModels: true,
-    instanced_mesh_optimization: Conf.INSTANCED_MESH_OPTIMIZATION
+    instanced_mesh_optimization: Conf.INSTANCED_MESH_OPTIMIZATION,
 });
 
 const centerPos = core.mapData.getSize() / 2 * Conf.CUBE_SIZE;
@@ -40,6 +42,8 @@ navigate.setPos(workspace.centerPos.x, 0, workspace.centerPos.z);
 
 // menu
 const mouseMove = new MouseMove(camera, navigate, core.blockRender);
+
+const water = new Water(camera, core.scene, Conf.WATER_HEIGHT, 1000, 0.5);
 
 
 // centers the camera whenever a model is created/loaded
@@ -144,6 +148,19 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+// load screen
+const loadscreen = document.getElementById('loadscreen');
+const startgame = document.getElementById('loadscreen');
+startgame.onselectstart = loadscreen.onselectstart = () => { return false; }
+startgame.oncontextmenu = loadscreen.oncontextmenu = () => { return false; }
+
+document.getElementById('loadscreen').addEventListener('click', () => {
+    document.getElementById('loadscreen').remove();
+
+    AudioManager.toggle('music1')
+});
+
+
 
 function createFPSBox() {
     const info = new FloatingBox('info');
@@ -197,21 +214,23 @@ function render()
     );
 
     // window.core = core;
+    water.update(delta);
 
     core.lightControl.updatePosition();
     core.renderer.render(core.scene, camera);
+
 }
 
 
-
 async function main() {
+    AudioManager.init(camera);
     await core.blockModels.loadAll();
     core.blockRender.setOptimizeBlocks(true);
     core.blockRender.setOptimizeSides(true);
     core.chunkSystem.setEnable(true);
     core.chunkSystem.setChunkCount(Conf.DEFAULT_CHUNK_COUNT);
     core.fog.enableFogSystem(Conf.FOG);
-
+    
 
     createFPSBox();
     createMenu();
@@ -220,6 +239,7 @@ async function main() {
     await new Promise((resolve, reject) => {
         const interval = setInterval(() => {
             if (core.playerModel && core.playerModel.loaded()) {
+                core.playerModel.hide();
                 clearInterval(interval);
                 resolve(true);
             }
@@ -235,7 +255,7 @@ async function main() {
 
     //const ids = [8, 8, 2, 2, 1, 1, 1, 1, 7, 7];
     const ids = [13, 12, 12, 11, 11, 10, 10, 9, 9, 9, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7];
-    MapGenerator.createByAlt(workspace.getModelData(), 30, ids.length, ids, seed);;
+    MapGenerator.createByAlt(workspace.getModelData(), 30, ids.length, ids, seed, true);
     workspace.centerPlayer();
 
     workspace.redraw();
@@ -243,6 +263,10 @@ async function main() {
     core.fog.enableFogSystem(Conf.FOG);
 
     core.camControl.centralize();
+
+
+    // createWaterSimulation(core.scene, core.renderer, core.camControl.camera, new THREE.Vector3(-10, 7, -10), 1000, 1000);
+    // addPlaneInFrontOfCamera(core.camControl.camera, core.scene);
 
     render();
 }

@@ -4,12 +4,13 @@ const Conf = {
     CUBE_SIZE: CUBE_SIZE,
     CUBE_ADD_Y: CUBE_SIZE / 2,
 
-    DEFAULT_SIZE: 30,
+    DEFAULT_SIZE: 100,
     DEFAULT_BUILDER_SIZE: 10,
 
     ASSETS_PATH: 'assets/',
     BLOCKMODELS_PATH: 'assets/blockmodel/',
     TEXTURE_PATH: 'assets/',
+    AUDIO_PATH: 'assets/audio/',
 
     CHUNK_SIZE: 8,
     DEFAULT_CHUNK_COUNT: 5,
@@ -25,7 +26,9 @@ const Conf = {
     MOUSE_SENSIVITY: 0.1,
 
     BLOCK_ATLAS_SIZE: 512,
-    BLOCK_TEXTURE_SIZE: 16
+    BLOCK_TEXTURE_SIZE: 16,
+
+    WATER_HEIGHT: 7
 };
 
 export default Conf;

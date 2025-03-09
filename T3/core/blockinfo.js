@@ -82,13 +82,15 @@ const blockList = [
     create('leaf7', '#087830', tileUV(6, 28), true),  //  leaf 7
     create('leaf8', '#087830', tileUV(7, 28), true),  //  leaf 8
 
-    create('gold', '#FF0000', tileUV(5, 0), true),
-    create('diamond', '#FF0000', tileUV(6, 0), true),
-    create('silver', '#FF0000', tileUV(7, 0), true),
+    create('gold', '#DDDD00', tileUV(5, 0), true),
+    create('diamond', '#0000DD', tileUV(6, 0), true),
+    create('silver', '#909090', tileUV(7, 0), true),
+    create('ruby', '#FF0000', tileUV(4, 0), true),
 
-    create('gold2', '#FF0000', tileUV(5, 1), true),
-    create('diamond2', '#FF0000', tileUV(6, 1), true),
-    create('silver2', '#FF0000', tileUV(7, 1), true),
+    create('gold2', '#FFFF00', tileUV(5, 1), true),
+    create('diamond2', '#0000FF', tileUV(6, 1), true),
+    create('silver2', '#c0c0c0', tileUV(7, 1), true),
+    create('ruby2', '#FF0000', tileUV(4, 1), true),
 
 ];
 
