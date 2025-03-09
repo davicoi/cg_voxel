@@ -1,10 +1,10 @@
-import * as THREE from    '../../build/three.module.js';
+import * as THREE from    '../build/three.module.js';
 import {ARjs}    from  '../libs/AR/ar.js';
 import { initAR,
          createSourceChangerInterface} from "../libs/util/utilAR.js"
 import {initDefaultSpotlight,
         initRenderer} from "../libs/util/util.js";
-import {GLTFLoader} from '../../build/jsm/loaders/GLTFLoader.js';
+import {GLTFLoader} from '../build/jsm/loaders/GLTFLoader.js';
 
 
 
