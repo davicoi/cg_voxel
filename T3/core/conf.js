@@ -13,7 +13,7 @@ const Conf = {
     AUDIO_PATH: 'assets/audio/',
 
     CHUNK_SIZE: 8,
-    DEFAULT_CHUNK_COUNT: 5,
+    DEFAULT_CHUNK_COUNT: 8,
 
     INSTANCED_MESH_OPTIMIZATION: true,
 
